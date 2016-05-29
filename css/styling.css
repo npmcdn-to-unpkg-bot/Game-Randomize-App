@@ -1,0 +1,16 @@
+html{
+	background-image: url(../images/stardust/stardust.png);
+
+
+}
+
+#main_banner{
+font-family: 'Cuprum', sans-serif;
+	font-weight: 60px;
+	text-transform: capitalize;
+	font-size: 40px;
+	color: white;
+	text-align: center;
+	margin-top: 5%;
+	text-shadow: 2px 2px 4px black;
+}
