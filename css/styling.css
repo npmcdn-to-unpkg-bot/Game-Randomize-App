@@ -1,16 +1,102 @@
+* {
+  box-sizing: border-box; 
+}
+
+
 html{
-	background-image: url(../images/stardust/stardust.png);
+	background-image: url(../images/escheresque_ste/escheresque_ste.png);
+}
 
+body{
+	margin: 0;
+	padding: 0;
+}
 
+section{
+	width: 100%;
+	padding: 0 7%;
+	display: table;
+	margin: 0;
+	max-width: none;
+	height: 100vh;
+	border: solid 20px;
+}
+
+.first_page{
+	height: 100vh;
+}
+
+.second_page{
+	height: 100vh;
+	
+}
+
+.third_page{
+	height: 100vh;
+}
+
+.fourth_page{
+	height: 100vh;
 }
 
 #main_banner{
-font-family: 'Cuprum', sans-serif;
+	font-family: 'Cuprum', sans-serif;
 	font-weight: 60px;
-	text-transform: capitalize;
-	font-size: 40px;
+	font-size: 400%;
 	color: white;
 	text-align: center;
-	margin-top: 5%;
+	margin-top: 25%;
 	text-shadow: 2px 2px 4px black;
+	text-transform: uppercase;
+	letter-spacing: 2.0px;
+	height: 30%;
+	min-width: 100%;
+}
+
+#main_banner header{
+	width:100%;
+	padding: 5%;
+	background-color: #21DB3F ;
+	border-radius: 25px;
+	height: 100%;
+	padding-top: 5%;
+
+}
+
+.reveal_box{
+	font-family: 'Cuprum', sans-serif;
+	display: inline-block;
+	
+	font-size: 60px;
+	font-weight: 20px;
+	width: 1%;
+	height: 100%;
+	color: white ;
+	overflow: auto;
+	text-indent: -9999px;
+	float: left;
+	/*
+	border-radius: 10px;
+	*/
+}	
+
+
+
+
+.strech_in_left{
+    animation: strech_in_left 1.2s ease forwards; 
+}
+
+
+@keyframes strech_in_left {
+from{width:2% ; text-indent: -9999}
+to{width:100%; text-indent:0}
+}
+
+
+
+/* Fix later*/
+.already_visible {
+  transform: translateX(0px);
+  animation: none;
 }
