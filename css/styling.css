@@ -14,12 +14,12 @@ body{
 
 section{
 	width: 100%;
-	padding: 0 7%;
+	/*padding: 0 7%;*/
 	display: table;
 	margin: 0;
 	max-width: none;
 	height: 100vh;
-	border: solid 20px;
+	border: groove 5px;
 }
 
 .first_page{
@@ -37,7 +37,102 @@ section{
 
 .fourth_page{
 	height: 100vh;
+
 }
+
+.button_page{
+	height: 100vh;
+	font-family: 'Cuprum', sans-serif;
+	text-align: center;
+	color: white;
+	font-size: 200%;
+
+}
+
+ .header_bar{
+	width: 100%;
+	height:10%;
+	
+	border-bottom: solid 1px white;
+}
+
+.header_bar h1{
+	margin: 0;
+
+}
+
+.button_column{
+
+}
+
+.button_page .button_column{
+	width:25%;
+	
+	height: 90%;
+	float: left;
+	display: inline-block;
+	border-right: 1px solid white;
+}
+
+.button_column p{
+	text-decoration: underline;
+}
+
+.button_column ul{
+	display: inline;
+	float: left;
+	list-style-type: none;
+}
+
+.button_column li{
+	display: inline;
+	float: left;
+	list-style-type: none;
+}
+
+/* .button_column*/
+ .button_column button{
+
+	display: inline-block;
+	margin: 0 10px 0 0 ;
+	padding: 10px;
+	font-size: 35%;
+	font-family: "Bitter",serif;
+	line-height: 1.8;
+	appearance:none;
+	box-shadow: none;
+	border-radius: 10px;
+	color: #fff;
+	background-color: #6496c8;
+	border: none;
+	box-shadow: 0 10px #27496d;
+	margin-top: 
+}
+
+
+ .button_column .gen_button{
+ 	margin-left:0%;
+ 	padding: 3%;
+ 	font-size: 40%;
+
+ }
+
+.button_column button:hover, 
+.button_column button.hover{
+	background-color: #417cb8;
+}
+
+.button_column button:active, 
+.button_column button.active{
+ /* Creates push button effect
+ translate shadow down (normal shodow value - pressed down 
+ shadow value = translateY font-variant-ligatures: ) */
+  background-color: #417cb8;
+  box-shadow: 0 5px #27496d;
+  transform: translateY(5px);
+}
+
+
 
 #main_banner{
 	font-family: 'Cuprum', sans-serif;
@@ -66,7 +161,6 @@ section{
 .reveal_box{
 	font-family: 'Cuprum', sans-serif;
 	display: inline-block;
-	
 	font-size: 60px;
 	font-weight: 20px;
 	width: 1%;
