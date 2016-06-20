@@ -1,14 +1,90 @@
 //A simple jquery function to keep track of the states of the buttons.
-//The way jquery makes the array is that is starts from top 
-//to bottom ranking the elements based on their position in the
-//html. So in a 3x3 button grid.
-// 1 2 3
-// 4 5 6
-// 7 8 9
-
 //Active class means clicked
-
 //NEEDS .on();
+//http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&sort=release_date&field_list=name,release_date
+//Results limited to 100 at a time use offset=100 to get more.
+
+
+var allPlatforms  = {};
+var platformOffSetCounters = 0; 
+
+function showResults(result){
+	var plaformButtonList = $('.button_column.platform ul');
+	var defaultAmountButtons = 6;
+	var buttonsOnScreen = 0;
+	console.log('in the show results section');
+	//result.results is because there is some metadata that you need to cycle through
+	$.each(result.results, function(index,value) {
+			var platformName = value.name;
+			var releaseDate = value.release_date;
+			allPlatforms[platformName] = releaseDate;
+			var button =  $('<button></button>');
+			button.addClass('game_button');
+			button.attr('id', platformName);
+			button.text(platformName);
+			plaformButtonList.append(button);
+			buttonsOnScreen++;
+
+			//Default is 6 buttons 
+			if(buttonsOnScreen>defaultAmountButtons){
+				button.hide();
+			}
+			//Finally since the api limits the amount of results to 100 at a time.
+			//Create an offeset counter, to put up where you left off and 
+
+		});
+	console.log('done WITH showResults() function');
+	console.log(allPlatforms);
+
+}
+
+
+function createIntialButtons(){
+			//var plaformButtonList = $('.button_column.platform ul');
+			//var button1 = $('#first');
+			//var button2 = $('#second');
+			//var button3 =  $('#third');
+			//button1.attr('id', )
+			//button
+}
+
+
+
+
+//Api Pull function needs to be its only function, not annoyomous. 
+
+
+
+
+ $(document).ready(function(){
+ 		console.log("executing json Giant bomb api pull");	
+		$.ajax({
+ 		url: 'http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&sort=release_date:desc&field_list=name,release_date',
+        type: "GET",
+        //What gets put inside the url.. the resources and api_ key dont work so I just hardcoded them in there...
+        data:{
+        		 //resources:'platforms',
+        		// api_key:'f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0',
+        		 format:'jsonp',
+        		 crossDomain:true,
+        		 offset: platformOffSetCounters,
+        		// field_list:'name,release_date',
+        		 json_callback:'showResults',
+        		// sort:'release_date',
+        	},
+        dataType:'jsonp'	
+ 		}).done(function(data){
+ 			console.log('done with the pull of the api data');
+ 			showResults(data.results);
+ 			console.log(data);
+ 		});
+ });
+
+
+
+
+
+
 
 
  $(function generateButtons(){
@@ -16,14 +92,34 @@
 				//Create new buttons in the platform section
 				//Right now it generates one button, but realistical
 				//it should do maybe 6 at a time.
-			var plaformButtonList = $('.button_column.platform ul');
-			var  button = $("<button> </button>");
-			button.addClass('game_button');
-			button.attr('id','fourth' );
-			button.text('fourth');
+				//All the buttons are premade loop through the collumn
+				//and make 3 buttons unhidden at a time.
+			var plaformButtonArray = $('.button_column.platform .game_button');
+			var amountOfButtonsGenerate = 3;
+			//Change counter to change how many buttons come up.
+			var counter = 0;
+			$.each(plaformButtonArray, function(index,value){
+				var tempButton = $(value);
+				//console.log(tempButton);
+				if(counter<amountOfButtonsGenerate){
+						 if(tempButton.is( ":hidden" )){
+						 	console.log(tempButton);
+						 	tempButton.show();
+						 	counter++;	
+						 }
+					
+				}	
+			});
 
-			console.log('created button with  class ' + button.attr('class'));
-			plaformButtonList.append(button);
+
+
+			// var  button = $("<button> </button>");
+			// button.addClass('game_button');
+			// button.attr('id','fourth' );
+			// button.text('fourth');
+
+			// console.log('created button with  class ' + button.attr('class'));
+			// plaformButtonList.append(button);
 			});
 		});
 
@@ -42,30 +138,13 @@ $(document).on('click' , '.game_button' , function(){
 
 //TIME TO PULL THE DATA FROM THE APIS!
 //1. GIANT BOMB
-//First search for all games on the Nintedo Wii.
 //f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0 API KEY
-
-//http://www.giantbomb.com/api/search?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=json&query=""/platforms=""
-//http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=json]&field_list=name
-//Above is a sample query returning just the names of all the plaforms, NOW LETS MAKE SOME BUTTONS
-
+//http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=json]&field_list=name,release_date
+//Above is a sample query returning just the names of all the plaforms, NOW LETS MAKE SOME BUTTONS release_date
+/* Pull data of all platforms + release date, put in array most recent first. New button id = platform name*/
 
 
 
-
-
- // $(function changeButtonState(){
-	// 		$(".game_button").on("click", function(){
-	// 			console.log( $(this).text());
-	// 			if( $(this).hasClass('active') ){
-	// 				console.log('removed active class');
-	// 				$(this).removeClass("active");
-	// 			}else{
-	// 				console.log('added active class ')
-	// 				$(this).addClass('active')
-	// 			}
-	// 		});
-	// 	});
 
 
 
