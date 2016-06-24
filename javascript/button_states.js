@@ -26,7 +26,7 @@ var defaultAmountButtons =6; //bUTTONS to initially spawned
 
 
 //var platformUrl = 'http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&sort=release_date:desc&field_list=name,release_date';
-var platformUrl = 'http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&sort=release_date:desc&field_list=name,release_date';
+var platformUrl = 'http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&sort=release_date:desc&field_list=name';
 var genreUrl = 'http://www.giantbomb.com/api/genres/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&field_list=name';
 var scoreUrl ; //Hardcoded 
 var timeUrl  ;
@@ -53,20 +53,20 @@ function showResults(result){
 				timeOffSetCounters++;
 				column = $('.button_column.time');
 				column.append(button);
-				console.log('column of type platform '  + ' is at offset value '  +  platformOffSetCounters);
+				console.log('column of type time '  + ' is at offset value '  +  timeOffSetCounters);
 
 
 			}else if (genreSwitch){
 				genreOffSetCounters++;
 				column = $('.button_column.genre');
 				column.append(button);
-				console.log('column of type platform '  + ' is at offset value '  +  platformOffSetCounters);
+				console.log('column of type genre '  + ' is at offset value '  +  genreOffSetCounters);
 
 			}else if(scoreSwitch){
 				scoreOffSetCounters++;
 				column = $('.button_column.score');
 				column.append(button);
-				console.log('column of type platform '  + ' is at offset value '  +  platformOffSetCounters);
+				console.log('column of type score '  + ' is at offset value '  +  scoreOffSetCounters);
 			}
 
 			buttonsOnScreen++;
@@ -94,7 +94,14 @@ function switchOffAll(){
 		platformSwitch  = false;
 }
 
-function pullData(url, offSetNum,type){
+/*
+ url : The url base from where you get the data
+ offSetNum: Giantbomb limits results to 100, so there needs to be an offset for multiple calls.
+ type: tell the function to tell which column to put the buttons in.
+ firstPull: A boolean to tell the function if this is the first time that the buttons will appear on the page. 
+*/
+
+function pullData(url, offSetNum,type, firstPull){
 	console.log('offset is currently at ' + offSetNum);
 		 switch(type){
 		 	case 'platform':
@@ -118,14 +125,21 @@ function pullData(url, offSetNum,type){
         		 format:'jsonp',
         		 crossDomain:true,
         		 offset: offSetNum,
-        		 json_callback: 'showResults',	
+        		 json_callback: 'showResults',
+        	},
+        complete: function(){	
+        	console.log('Done with the AJAX Call');
+        	if(firstPull){
+        		console.log('First pull, so calling the Genre pulldata() function');
+        		pullData(genreUrl, genreOffSetCounters, 'genre');	
         	}
- 		}).done(function()  {
-    		alert("Success.");
-		}).fail(function()  {
-    		alert("Sorry. Server unavailable. ");
-			}); 
-		
+        },	
+        success: function(data){
+        	//Not Successful, but Data was pulled. 
+        	console.log('called success: in AJAX call') ;
+        }
+
+ 		});
 }
 
 
@@ -133,11 +147,13 @@ function pullData(url, offSetNum,type){
 
  $(document).ready(function(){
  		console.log("executing json Giant bomb api for the first time.");
- 		//Pull all general starting with Platform
- 		pullData(platformUrl, platformOffSetCounters,'platform');
- 	//	pullData(genreUrl, genreOffSetCounters, 'genre');	
- 		//defaultAmountButtons = 0 ;
  		
+ 		var firstPull = true ; 
+
+ 		pullData(platformUrl, platformOffSetCounters,'platform', firstPull );
+ 		//Only pull the data from genre after AJAX call is done. 
+ 		//pullData(genreUrl, genreOffSetCounters, 'genre');	
+ 				
  		
  });
 
@@ -206,7 +222,7 @@ function pullData(url, offSetNum,type){
  					console.log('in function GENERATEBUTTONS()');
 					if( offSetNum%100 == 0 || offSetNum==0 ){
 						console.log('pulling more data');
-						pullData(url, offSetNum, type);
+						pullData(url, offSetNum, type,false);
 					}	
 
 					var column ;
