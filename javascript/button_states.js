@@ -146,15 +146,9 @@ function pullData(url, offSetNum,type, firstPull){
 
 
  $(document).ready(function(){
- 		console.log("executing json Giant bomb api for the first time.");
- 		
- 		var firstPull = true ; 
-
+ 		console.log("executing json Giant bomb api for the first time."); 		
+ 		var firstPull = true ;
  		pullData(platformUrl, platformOffSetCounters,'platform', firstPull );
- 		//Only pull the data from genre after AJAX call is done. 
- 		//pullData(genreUrl, genreOffSetCounters, 'genre');	
- 				
- 		
  });
 
  
@@ -164,8 +158,6 @@ function pullData(url, offSetNum,type, firstPull){
 //2. the annyomous function inside click, make it a real function.
 //3. pass in the url etc as need to the pull data function. 
  $(function detectClick(){
-
-
 			$(".gen_button.platform").click(function(){
 				console.log('generate button clicked');
 				generateButtons(platformUrl, platformOffSetCounters, 'platform');
@@ -223,21 +215,25 @@ function pullData(url, offSetNum,type, firstPull){
 					if( offSetNum%100 == 0 || offSetNum==0 ){
 						console.log('pulling more data');
 						pullData(url, offSetNum, type,false);
+						//set the default buttons to 0. Only add buttons from this function
+						defaultAmountButtons = 0;
+
 					}	
 
 					var column ;
-					if(platformSwitch){
+					//Change this to type 
+					if(type == 'platform'){
 						column = $('.button_column.platform .game_button');
 						console.log('buttons attempted to be added to platform ');
-					}else if (timeSwitch){
+					}else if (type == 'time'){
 						column = $('.button_column.time .game_button');
 						console.log('buttons attempted to be added to time ');
 
-					}else if (genreSwitch){
+					}else if (type == 'genre'){
 						column = $('.button_column.genre .game_button');
 						console.log('buttons attempted to be added to genre ');
 
-					}else if(scoreSwitch){
+					}else if(type == 'score'){
 						column = $('.button_column.score .game_button ');
 						console.log('buttons attempted to be added to score ');
 
