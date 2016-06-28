@@ -23,10 +23,15 @@ var scoreSwitch = false;
 var timeSwitch=false; 
 var showButtons = 4;
 var defaultAmountButtons =6; //bUTTONS to initially spawned
+var platformIds = []; 
+var mixerNumberOffSet = 0 ;
+var platformFilterString='&';
+var userSelectedPlatformGamesId = [];
+//It would be a waste of time to pull all games images and names and links. Just pull the id.
 
 
 //var platformUrl = 'http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&sort=release_date:desc&field_list=name,release_date';
-var platformUrl = 'http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&sort=release_date:desc&field_list=name';
+var platformUrl = 'http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&sort=release_date:desc&field_list=id,name';
 var genreUrl = 'http://www.giantbomb.com/api/genres/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&field_list=name';
 var scoreUrl ; //Hardcoded 
 var timeUrl  ;
@@ -37,9 +42,11 @@ function showResults(result){
 	//result.results is because there is some metadata that you need to cycle through
 	$.each(result.results, function(index,value) {
 			var mainName = value.name;
+			var mainId = value.id;
+			console.log('MAIN ID PUSHED IS '  +  mainId);
 			var button =  $('<button></button>');
 			button.addClass('game_button');
-			button.attr('id', mainName);
+			button.attr('id', mainId);
 			button.text(mainName);
 			//Append here
 			var column ;
@@ -48,20 +55,16 @@ function showResults(result){
 				column = $('.button_column.platform');
 				column.append(button);
 				console.log('column of type platform '  + ' is at offset value '  +  platformOffSetCounters);
-
 			}else if (timeSwitch){
 				timeOffSetCounters++;
 				column = $('.button_column.time');
 				column.append(button);
 				console.log('column of type time '  + ' is at offset value '  +  timeOffSetCounters);
-
-
 			}else if (genreSwitch){
 				genreOffSetCounters++;
 				column = $('.button_column.genre');
 				column.append(button);
 				console.log('column of type genre '  + ' is at offset value '  +  genreOffSetCounters);
-
 			}else if(scoreSwitch){
 				scoreOffSetCounters++;
 				column = $('.button_column.score');
@@ -111,8 +114,9 @@ function pullData(url, offSetNum,type, firstPull){
 		 		genreSwitch = true; 
 		 		break;
 		 	case 'time':
-		 		timeSwitch = true; 
-		 		break;
+		 	timeSwitch = true; 
+		 		break;	
+
 		 	case 'score':
 		 		scoreSwitch = true; 
 		 		break;
@@ -131,7 +135,7 @@ function pullData(url, offSetNum,type, firstPull){
         	console.log('Done with the AJAX Call');
         	if(firstPull){
         		console.log('First pull, so calling the Genre pulldata() function');
-        		pullData(genreUrl, genreOffSetCounters, 'genre');	
+        		//pullData(genreUrl, genreOffSetCounters, 'genre');	
         	}
         },	
         success: function(data){
@@ -179,37 +183,135 @@ function pullData(url, offSetNum,type, firstPull){
 				generateButtons(scoreUrl, scoreOffSetCounters, 'score');
 				scoreSwitch = true;
 		
-			});
+			});		
+});
+
+ $(function randomizeButtonClick(){
+ 	$(".execute_button").click(function(){
+ 		console.log('Executing random search'); 		
+ 		gatherUserPreferences(); 
+ 	});
+ });
+
+//Supposed to gather from ALL BUTTONS
+function gatherUserPreferences(){
+		//Get what platform buttons where clicked.
+		console.log('in gatherUserPreferences() function');
+		var platformButtons = $('.button_column.platform .game_button');
+		console.log('platformButtonsArray is of length ' + platformButtons.length);
+		var i= 0 ;
+		//Take out hidden buttons, and buttons that do not have the active class.
+		$.each(platformButtons,function(index, value){
+			//Make a jquery instance of the current index
+			var tempJQ = $(value);
+			console.log('looping through, current button is :  '  + tempJQ );
 			
-
-					
-						
-
-
-
-				// if( platformOffSetCounters%100 == 0 || platformOffSetCounters==0 ){
-				// 	console.log('pulling platform data');
-				// 	pullPlatformData();
-				// }
-
-			//var plaformButtonArray = $('.button_column.platform .game_button');
-			//var amountOfButtonsGenerate = 3;
-			//Change counter to change how many buttons come up.
-		//	var counter = 0;
-			// $.each(plaformButtonArray, function(index,value){
-			// 	var tempButton = $(value);
-			// 	//console.log(tempButton);
-			// 	if(counter<amountOfButtonsGenerate){
-			// 			 if(tempButton.is( ":hidden" )){
-			// 			 	console.log(tempButton);
-			// 			 	tempButton.show();
-			// 			 	counter++;	
-			// 			}
-			// 	}	
-			// });		
-			
+			if( !(tempJQ.is(':hidden')) &&  tempJQ.hasClass('active') ){
+				platformIds.push(tempJQ.attr('id'));
+				console.log( ' currentButton is not hidden  and  active ');
+			}
 		});
+			//Have the id of all the pushed platform buttons now just need another ajax call.
+			//Call the function to create the url that appends the ids.
+			makeFilterUrlString();
+			pullFilteredData(mixerNumberOffSet);
+}
 
+
+function makeFilterUrlString(){
+		var   i = 0 ;
+		for(i; i<platformIds.length; i++){
+			console.log('filter=platforms:'+platformIds[i] + '&');
+			platformFilterString +=  'filter=platforms:'+platformIds[i]+ '&'; 
+		}
+
+}
+
+
+// AJAX CALL TO PUll the filtered data
+function pullFilteredData(){
+	//NEED TO KEEP ADDING filter = for each game SMH
+		var url = 'http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&field_list=name,id';
+		url += platformFilterString;
+		$.ajax({
+ 		url: url,
+        type: "GET",
+        dataType:'jsonp',
+        data:{
+        		 format:'jsonp',
+        		 //filter: platformFilterString,
+        		 crossDomain:true,
+        		 offset: mixerNumberOffSet,
+        		 json_callback: 'randomResultPull',
+        	},
+        complete: function(){	
+        	console.log('Done with the AJAX Call');
+     //   	Call recursively until all the results are done.
+        	if( mixerNumberOffSet%100 == 0 || mixerNumberOffSet==0 ){
+						console.log('pulling more data because the offset is a mutiple of 100');
+						pullFilteredData();
+				}else{
+					//The call is over, randomize the data
+					randomizeData();
+				}
+        },	
+        success: function(data){
+        	console.log('called success: in AJAX call') ;
+        }
+ 		});
+}
+
+
+
+///SUCESS FOR THE FILTERED JSONP CALLBACK
+
+function randomResultPull(result){	
+	$.each(result.results, function(index,value) {
+		mixerNumberOffSet++;
+		console.log(value);
+		userSelectedPlatformGamesId.push(value.id);
+	});
+}
+
+//Randomized the ids, and choose one.
+function randomizeData(){
+	var random = Math.floor((Math.random()*userSelectedPlatformGamesId.length)); 
+	console.log('Random Index choosen at index ' + random); 
+	console.log('Contained in this ' + userSelectedPlatformGamesId[random]);
+	displayRandomGame(userSelectedPlatformGamesId[random]);
+}
+  
+
+//Finally another function to put all the gather data from the random Selction together
+//and the image name, and maybe the details of the final selected game. 
+
+function displayRandomGame(gameId){
+	var url = 'http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&field_list=name,deck,image';
+	$.ajax({
+ 		url: url,
+        type: "GET",
+        dataType:'jsonp',
+        data:{
+        		 filter: 'id:'+gameId ,
+        		 format:'jsonp',
+        		 crossDomain:true,
+        		 json_callback: 'sendToScreen',
+        	},
+        complete: function(){	
+        	console.log('Done with the AJAX Call');
+        }
+ 		});
+}
+
+function sendToScreen(results){
+
+	console.log('name of selected game is .... ' +  results.result,name); 
+}
+
+
+
+
+///////////////////////////////////////////////////////////////////////////
  function generateButtons(url , offSetNum , type){
  					console.log('in function GENERATEBUTTONS()');
 					if( offSetNum%100 == 0 || offSetNum==0 ){
@@ -217,9 +319,7 @@ function pullData(url, offSetNum,type, firstPull){
 						pullData(url, offSetNum, type,false);
 						//set the default buttons to 0. Only add buttons from this function
 						defaultAmountButtons = 0;
-
 					}	
-
 					var column ;
 					//Change this to type 
 					if(type == 'platform'){
@@ -256,7 +356,6 @@ function pullData(url, offSetNum,type, firstPull){
  }
 
 
-
 //Changing the button states
 $(document).on('click' , '.game_button' , function(){
 		console.log( $(this).text());
@@ -270,12 +369,6 @@ $(document).on('click' , '.game_button' , function(){
 	});
 
 
-//TIME TO PULL THE DATA FROM THE APIS!
-//1. GIANT BOMB
-//f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0 API KEY
-//http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=json]&field_list=name,release_date
-//Above is a sample query returning just the names of all the plaforms, NOW LETS MAKE SOME BUTTONS release_date
-/* Pull data of all platforms + release date, put in array most recent first. New button id = platform name*/
 
 
 
