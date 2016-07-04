@@ -1,14 +1,27 @@
 //A simple jquery function to keep track of the states of the buttons.
 //Active class means clicked
-//NEEDS .on();
-//http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&sort=release_date&field_list=name,release_date
-//Results limited to 100 at a time use offset=100 to get more.
-// http://www.giantbomb.com/api//?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&field_list=name';
-// http://www.giantbomb.com/api/company/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&field_list=name';
 
-//BUG! PULLDATA ACTIVATES SHOW RESULTS WHICH ADDS DEFAULT BUTTONS TO THE SCREEN, BUT GENEREATE BUTTONS CALLS IT AGAIN, SO IT GENEATES
-//MORE BUTTONS THAN EXPECTED.
-//DOCUMENT.READY DOES NOT RUN SEQUENTIALLY 
+//IMPORTANT NOTE----> Yeah this is already a lot of data that needs to keep being pulled,
+//Going to cache the following information once per page load locally on the website 
+/*
+1. All ~50,000 games, name, id, deck, and image.
+2. Platform names  // only 148
+3. Genre names  // only 48
+This should make the app much faster and load less frequently
+
+PROBLEMS: How to implement cache?
+
+
+FUCK THIS CLIENT SIDE CACHE IS REFRESHED EVERYTIME THE BROWSER IS REFRESHED. This is really not information that 
+needs to be pulled more than once, use LOCAL STORAGE. 
+
+
+DONE
+Q: Even if you store the game with the key as the id, how will you know which.... never mind!
+   Just query the cache with the random function -> There is a way to do this with objects, without knowing the key.
+
+
+*/
 
 
 var allPlatforms  = [];
@@ -150,9 +163,9 @@ function pullData(url, offSetNum,type, firstPull){
 
 
  $(document).ready(function(){
- 		console.log("executing json Giant bomb api for the first time."); 		
- 		var firstPull = true ;
- 		pullData(platformUrl, platformOffSetCounters,'platform', firstPull );
+ 		//console.log("executing json Giant bomb api for the first time."); 		
+ 		//var firstPull = true ;
+ 		//pullData(platformUrl, platformOffSetCounters,'platform', firstPull );
  });
 
  
@@ -186,12 +199,6 @@ function pullData(url, offSetNum,type, firstPull){
 			});		
 });
 
- $(function randomizeButtonClick(){
- 	$(".execute_button").click(function(){
- 		console.log('Executing random search'); 		
- 		gatherUserPreferences(); 
- 	});
- });
 
 //Supposed to gather from ALL BUTTONS
 function gatherUserPreferences(){
@@ -287,12 +294,12 @@ function randomizeData(){
 
 function displayRandomGame(gameId){
 	var url = 'http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&field_list=name,deck,image';
+	url +=  'filter=id:'+gameId;
 	$.ajax({
  		url: url,
         type: "GET",
         dataType:'jsonp',
         data:{
-        		 filter: 'id:'+gameId ,
         		 format:'jsonp',
         		 crossDomain:true,
         		 json_callback: 'sendToScreen',
@@ -306,6 +313,7 @@ function displayRandomGame(gameId){
 function sendToScreen(results){
 
 	console.log('name of selected game is .... ' +  results.result,name); 
+
 }
 
 
@@ -324,18 +332,18 @@ function sendToScreen(results){
 					//Change this to type 
 					if(type == 'platform'){
 						column = $('.button_column.platform .game_button');
-						console.log('buttons attempted to be added to platform ');
+						console.log('buttons attempted to be added to platform');
 					}else if (type == 'time'){
 						column = $('.button_column.time .game_button');
-						console.log('buttons attempted to be added to time ');
+						console.log('buttons attempted to be added to time');
 
 					}else if (type == 'genre'){
 						column = $('.button_column.genre .game_button');
-						console.log('buttons attempted to be added to genre ');
+						console.log('buttons attempted to be added to genre');
 
 					}else if(type == 'score'){
 						column = $('.button_column.score .game_button ');
-						console.log('buttons attempted to be added to score ');
+						console.log('buttons attempted to be added to score');
 
 					}
 					var counter = 0;
@@ -370,6 +378,91 @@ $(document).on('click' , '.game_button' , function(){
 
 
 
+
+/*
+One Ajax Call to pull all possible games and cache them in the browser using Javascript
+*/
+
+$(function randomizeButtonClick(){
+ 	$(".execute_button").click(function(){
+ 		console.log('Executing random search'); 		
+ 		gatherUserPreferences(); 
+ 	});
+ });
+
+////////////////////////////////////// Cache
+var mainGamesPullOffset =  0;
+
+//For the jsonp callback functions
+function cacheData(result){
+	console.log('cacheData function called');
+	$.each(result.results, function(index,value){
+		var name = value.name;
+		console.log('name is ' +name); 
+		var deck =  value.deck;
+		console.log('deck is ' + deck); 
+		var id =  value.id; 
+		console.log('id is ' +id); 
+		var image =  value.image;
+		mainGamesPullOffset++;
+		//Put the data in a gameEntry Object.
+		var gameEntry = {
+			name:name,
+			deck: deck,
+			id:id,
+			image:image
+		};
+		//Put the game into the cache. Check if it is in the cache first
+		// console.log('Putting game into cache');
+		// cache.put(gameEntry.id,gameEntry);
+		// console.log('Calling cache.get()');
+		// console.log(cache.get(gameEntry.id))
+	});
+}
+
+function allGamesAjaxCall(request){
+		$.ajax({
+ 		url: request.url,
+ 		type:'GET',
+ 		dataType:'jsonp',
+ 		data:{
+ 		crossDomain:true,
+       	format:'jsonp',
+    	offset: mainGamesPullOffset,
+    	json_callback:'cacheData',
+    	field_list:request.field_list,
+    	},
+        complete: function(){	
+        	console.log('Done with the AJAX Call');
+        	if( mainGamesPullOffset%100 == 0 || mainGamesPullOffset==0 ){
+						console.log('pulling more data because the offset is a mutiple of 100');
+						//allGamesAjaxCall(request);
+				}else{
+
+    	    }
+    	  }
+ 	});
+}
+
+
+ //Current Amount of all games on Giantbomb is ~50,000 
+var cache = new ObjectCache(55000);
+
+var request = {
+	url:'http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0',
+    type: "GET",
+    dataType:'jsonp',
+    data:{
+    format:'jsonp',
+    crossDomain:true,
+    offset: 0,
+    json_callback: 'cacheData',
+    field_list:'name,id,image,deck'
+	}
+};
+
+
+var response = allGamesAjaxCall(request); 
 
 
 
