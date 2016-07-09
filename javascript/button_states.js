@@ -407,7 +407,13 @@ $(function randomizeButtonClick(){
 
 ////////////////////////////////////// Cache
 var mainGamesPullOffset =  0;
-'name, platforms, image,deck, original_release_date'
+
+//Insert char at specific position 
+function insertAt(originalString, index, char){
+	console.log('String is  :  ' + originalString);
+	console.log('character to insert is:   ' + char );
+	return originalString.substr(0,index) + char +originalString.substr(index,originalString.length);
+}
 
 
 
@@ -437,18 +443,42 @@ function cacheData(result){
 		console.log('Original release date is ' + originalRelease);
 		mainGamesPullOffset++;
 		//Put the data in a gameEntry Object.
+		//Date includes time, which is not needed for mySQL, trim it.
+		var newDate = originalRelease.substring(0, 10);
+		//SQL needs to had apstromphes double escaped, so that could possibly
+		//be in the  name or deck.
+		//WHAT IF it has more than one apostrophe...
+		
+
+			for(var i=0;i<name.length;i++){
+				if(name[i]==='\''){
+					name = insertAt(name, i , '\'');
+					console.log('Found apostrophe at index ' + i );
+					i++;
+				}
+			}
+			console.log('New name is ' + name);
+
+			for(var i=0;i<deck.length;i++){
+				if(deck[i]==='\''){
+					console.log('Found apostrophe at index DECK' + i );
+					deck  = insertAt(deck, i , '\'');
+					i++;
+				}
+			}
+		
+		console.log('New deck is '  + deck); 
 		var gameEntry = {
 			name:name,
 			deck: deck,
 			image:image,
-			platform:platforms,
-			originalRelease:originalRelease
+			platform:allPlatforms,	
+			originalRelease:newDate
 		};
 		allGamesEntry.push(gameEntry);
 		console.log(gameEntry);
 	});
-		console.log('Done with the AJAX Call');
-       	console.log("Attemping to pass data to PHP with a POST AJAX Call");
+	
 		//When everything is done make call another function for the AJAX to post the data into my database
 		// data = {
 		// 		name:allGamesEntry[0].name,
@@ -459,7 +489,7 @@ function cacheData(result){
 		// 	}
 		// 	$.post(
 		// 		'insertgames.php',
-		// 		{
+		 //		{
 		// 		name:allGamesEntry[0].name,
 		// 		deck: allGamesEntry[0].deck,
 		// 		image:allGamesEntry[0].image,
@@ -484,19 +514,22 @@ function cacheData(result){
 	 // 	}
 	 // }
 
-	 var name = "KODAK BLACK";
-	 var age = 18; 
-	var dataString = 'name='+ name + '&age' + age ; 
-
+	//  var name = "KODAK BLACK";
+	//  var age = 18; 
+	// var dataString = 'name='+ name + '&age' + age ; 
+	 data = {
+		 		name:allGamesEntry[0].name,
+		 		deck: allGamesEntry[0].deck,
+		 		image:allGamesEntry[0].image,
+		 		platform:allGamesEntry[0].platform,
+		 		originalRelease:allGamesEntry[0].originalRelease
+		 	}
 
 
 	var request =  $.ajax({
  		url: 'http://localhost/gameApp/php/insertgames.php',
         type: "post",
-        data:{
-        	name:"KODAK BLACK",
-        	age:18
-        },
+        data
 		 });
     // Callback handler that will be called on success
     request.done(function (response, textStatus, jqXHR){
