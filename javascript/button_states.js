@@ -1,29 +1,14 @@
 //A simple jquery function to keep track of the states of the buttons.
 //Active class means clicked
-
-//IMPORTANT NOTE----> Yeah this is already a lot of data that needs to keep being pulled,
-//Going to cache the following information once per page load locally on the website 
 /*
-1. All ~50,000 games, name, id, deck, and image.
-2. Platform names  // only 148
-3. Genre names  // only 48
-This should make the app much faster and load less frequently
-
-PROBLEMS: How to implement cache?
-
-
-FUCK THIS CLIENT SIDE CACHE IS REFRESHED EVERYTIME THE BROWSER IS REFRESHED. This is really not information that 
-needs to be pulled more than once, use LOCAL STORAGE. 
-
-
-DONE
-Q: Even if you store the game with the key as the id, how will you know which.... never mind!
-   Just query the cache with the random function -> There is a way to do this with objects, without knowing the key.
-
+I AM CREATING MY OWN DATABASE. AJAX THE DATA INTO THE LOCAL HOST TALBES. 
 
 */
 
 
+
+
+var allGamesEntry  = [] ; 
 var allPlatforms  = [];
 var platformOffSetCounters = 0; 
 var genreOffSetCounters = 0;
@@ -40,13 +25,40 @@ var platformIds = [];
 var mixerNumberOffSet = 0 ;
 var platformFilterString='&';
 var userSelectedPlatformGamesId = [];
-//It would be a waste of time to pull all games images and names and links. Just pull the id.
+var totalGames; 
+// $.get(
+// 		'http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsop&field_list=name',
+// 		{crossDomain:true, format:'jsonp', json_callback},
+// 		'jsonp',
+// 		function(response){
+// 			totalGames = response.number_of_total_results 
+// 		}
+// 	);
 
 
-//var platformUrl = 'http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&sort=release_date:desc&field_list=name,release_date';
+var request = {
+	//remove limit later
+	url:'http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&limit=1',
+    type: "GET",
+    dataType:'jsonp',
+    data:{
+    format:'jsonp',
+    crossDomain:true,
+    offset: 0,
+    json_callback: 'cacheData',
+    field_list:'name, platforms, image,deck, original_release_date'
+	}
+};
+
+	var response = allGamesAjaxCall(request); 
+//http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=json&field_list=name,deck,platforms,original_release_date,image
+
+
+myGameStorage = localStorage;
+
 var platformUrl = 'http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&sort=release_date:desc&field_list=id,name';
 var genreUrl = 'http://www.giantbomb.com/api/genres/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&field_list=name';
-var scoreUrl ; //Hardcoded 
+var scoreUrl ;  
 var timeUrl  ;
 
 function showResults(result){
@@ -166,6 +178,9 @@ function pullData(url, offSetNum,type, firstPull){
  		//console.log("executing json Giant bomb api for the first time."); 		
  		//var firstPull = true ;
  		//pullData(platformUrl, platformOffSetCounters,'platform', firstPull );
+ 		
+
+
  });
 
  
@@ -392,8 +407,15 @@ $(function randomizeButtonClick(){
 
 ////////////////////////////////////// Cache
 var mainGamesPullOffset =  0;
+'name, platforms, image,deck, original_release_date'
+
+
 
 //For the jsonp callback functions
+//Waittt a game could have been released for multiple platforms....
+// Put all the platforms in as one string????? Separted by comma. 
+
+
 function cacheData(result){
 	console.log('cacheData function called');
 	$.each(result.results, function(index,value){
@@ -401,68 +423,124 @@ function cacheData(result){
 		console.log('name is ' +name); 
 		var deck =  value.deck;
 		console.log('deck is ' + deck); 
-		var id =  value.id; 
-		console.log('id is ' +id); 
-		var image =  value.image;
+		var image =  value.image.medium_url;
+		console.log('image url '  + image);
+		var platforms = value.platforms;
+		//There COULD BE MULTIPLE FOR ONE GAME
+		var allPlatforms="" ;
+		$.each(platforms, function(index,value){
+			console.log("Name of platform/s is " + value.name);
+			allPlatforms += value.name + ", ";
+		});
+		console.log("Name of platform/s is " + allPlatforms);
+		var originalRelease = value.original_release_date;
+		console.log('Original release date is ' + originalRelease);
 		mainGamesPullOffset++;
 		//Put the data in a gameEntry Object.
 		var gameEntry = {
 			name:name,
 			deck: deck,
-			id:id,
-			image:image
+			image:image,
+			platform:platforms,
+			originalRelease:originalRelease
 		};
-		//Put the game into the cache. Check if it is in the cache first
-		// console.log('Putting game into cache');
-		// cache.put(gameEntry.id,gameEntry);
-		// console.log('Calling cache.get()');
-		// console.log(cache.get(gameEntry.id))
+		allGamesEntry.push(gameEntry);
+		console.log(gameEntry);
 	});
-}
+		console.log('Done with the AJAX Call');
+       	console.log("Attemping to pass data to PHP with a POST AJAX Call");
+		//When everything is done make call another function for the AJAX to post the data into my database
+		// data = {
+		// 		name:allGamesEntry[0].name,
+		// 		deck: allGamesEntry[0].deck,
+		// 		image:allGamesEntry[0].image,
+		// 		platform:allGamesEntry[0].platforms,
+		// 		originalRelease:allGamesEntry[0].originalRelease
+		// 	}
+		// 	$.post(
+		// 		'insertgames.php',
+		// 		{
+		// 		name:allGamesEntry[0].name,
+		// 		deck: allGamesEntry[0].deck,
+		// 		image:allGamesEntry[0].image,
+		// 		platform:allGamesEntry[0].platforms,
+		// 		originalRelease:allGamesEntry[0].originalRelease
+		// 		},
+		// 		function(){
+		// 			console.log("FUCKKKKKKKKKKKKKKKK");
+		// 		});
+		
+	 // var invocation = new XMLHttpRequest(); 
+	 // var url = "http://localhost/insertgames.php";
+	 // function callOtherDomain(){
+	 // 	if(invocation){
+	 // 		invocation.open('POST',url, true)
+	 // 		invocation.onreadystatechange = function(){
+	 // 			if(invocation.readyState === XMLHttpRequest.DONE && invocation.status ===200){
+	 // 				console.log(invocation.responseText);
+	 // 			}
+	 // 		};
+	 // 		invocation.send(); 
+	 // 	}
+	 // }
+
+	 var name = "KODAK BLACK";
+	 var age = 18; 
+	var dataString = 'name='+ name + '&age' + age ; 
+
+
+
+	var request =  $.ajax({
+ 		url: 'http://localhost/gameApp/php/insertgames.php',
+        type: "post",
+        data:{
+        	name:"KODAK BLACK",
+        	age:18
+        },
+		 });
+    // Callback handler that will be called on success
+    request.done(function (response, textStatus, jqXHR){
+        // Log a message to the console
+        console.log("Hooray, it worked!");
+        console.log(response);
+    });
+
+    // Callback handler that will be called on failure
+    request.fail(function (jqXHR, textStatus, errorThrown){
+        // Log the error to the console
+        console.error(
+            "The following error occurred: "+
+            (textStatus, errorThrown));
+        });
+
+
+	 }
 
 function allGamesAjaxCall(request){
-		$.ajax({
- 		url: request.url,
- 		type:'GET',
- 		dataType:'jsonp',
- 		data:{
- 		crossDomain:true,
-       	format:'jsonp',
-    	offset: mainGamesPullOffset,
-    	json_callback:'cacheData',
-    	field_list:request.field_list,
-    	},
-        complete: function(){	
-        	console.log('Done with the AJAX Call');
-        	if( mainGamesPullOffset%100 == 0 || mainGamesPullOffset==0 ){
-						console.log('pulling more data because the offset is a mutiple of 100');
-						//allGamesAjaxCall(request);
-				}else{
+			// $.ajax({
+ 		// 	url: request.url,
+ 		// 	type:'GET',
+ 		// 	dataType:'jsonp',
+ 		 	data = {
+ 		 		crossDomain:true,
+   	    		format:'jsonp',
+    			offset: mainGamesPullOffset,
+    			json_callback:'cacheData',
+    			field_list:request.field_list,
+     		}
 
-    	    }
-    	  }
- 	});
+     		$.get(request.url,
+       				data,
+       				'cacheData',
+       				'jsonp'
+       		)
+
 }
 
 
- //Current Amount of all games on Giantbomb is ~50,000 
-var cache = new ObjectCache(55000);
-
-var request = {
-	url:'http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0',
-    type: "GET",
-    dataType:'jsonp',
-    data:{
-    format:'jsonp',
-    crossDomain:true,
-    offset: 0,
-    json_callback: 'cacheData',
-    field_list:'name,id,image,deck'
-	}
-};
 
 
-var response = allGamesAjaxCall(request); 
+
 
 
 
