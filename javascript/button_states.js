@@ -50,7 +50,7 @@ var request = {
 	}
 };
 
-	var response = allGamesAjaxCall(request); 
+//	var response = allGamesAjaxCall(request); 
 //http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=json&field_list=name,deck,platforms,original_release_date,image
 
 
