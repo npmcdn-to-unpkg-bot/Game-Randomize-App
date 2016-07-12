@@ -5,7 +5,7 @@ I AM CREATING MY OWN DATABASE. AJAX THE DATA INTO THE LOCAL HOST TALBES.
 
 */
 
-
+//WITH TIME,GENRE,PLATFORMS,RELEASEDATE (maybe rating?)
 
 
 var allGamesEntry  = [] ; 
@@ -26,6 +26,9 @@ var mixerNumberOffSet = 0 ;
 var platformFilterString='&';
 var userSelectedPlatformGamesId = [];
 var totalGames; 
+
+var platformArray= [] ;
+var genreArray = {};
 // $.get(
 // 		'http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsop&field_list=name',
 // 		{crossDomain:true, format:'jsonp', json_callback},
@@ -53,19 +56,38 @@ var request = {
 //	var response = allGamesAjaxCall(request); 
 //http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=json&field_list=name,deck,platforms,original_release_date,image
 
+//storing platform ids and names in local storage and then getting them out.
 
-myGameStorage = localStorage;
 
-var platformUrl = 'http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&sort=release_date:desc&field_list=id,name';
-var genreUrl = 'http://www.giantbomb.com/api/genres/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&callback=?&field_list=name';
+var platformUrl ='https://igdbcom-internet-game-database-v1.p.mashape.com/platforms/?';
+var genreUrl = 'https://igdbcom-internet-game-database-v1.p.mashape.com/genres/?';
 var scoreUrl ;  
 var timeUrl  ;
+
+
+
+
+
+
+//Hides the hardcoded dates
+
+//Populate
+
+
+
+
+
+
+
+
+
+
 
 function showResults(result){
 	var buttonsOnScreen = 0;
 	console.log('in the show results section');
 	//result.results is because there is some metadata that you need to cycle through
-	$.each(result.results, function(index,value) {
+	$.each(result, function(index,value) {
 			var mainName = value.name;
 			var mainId = value.id;
 			console.log('MAIN ID PUSHED IS '  +  mainId);
@@ -76,6 +98,10 @@ function showResults(result){
 			//Append here
 			var column ;
 			if(platformSwitch){
+				//Caching the platform name and id.
+				//Because I know its a platform, put id:('plat #')split by whitespace to get number.
+				localStorage.setItem('plat ' + mainId, mainName);
+				console.log('Pushed '  + mainName + " with id: "  + mainId + " to localStorage Platform");
 				platformOffSetCounters++;
 				column = $('.button_column.platform');
 				column.append(button);
@@ -86,6 +112,10 @@ function showResults(result){
 				column.append(button);
 				console.log('column of type time '  + ' is at offset value '  +  timeOffSetCounters);
 			}else if (genreSwitch){
+				//Caching the platform name and id.
+				//Because I know its a platform, put id:(plat#)where I strip out the number.
+				localStorage.setItem('genre '+ mainId, mainName);
+				console.log('Pushed '  + mainName + " with id: "  + mainId + " to localStorage Genre");
 				genreOffSetCounters++;
 				column = $('.button_column.genre');
 				column.append(button);
@@ -149,25 +179,40 @@ function pullData(url, offSetNum,type, firstPull){
 		$.ajax({
  		url: url,
         type: "GET",
-        dataType:'jsonp',
+        dataType:'json',
         data:{
-        		 format:'jsonp',
-        		 crossDomain:true,
+        		 fields:'name,id',
         		 offset: offSetNum,
-        		 json_callback: 'showResults',
+        		 limit:50,
+        		 order:'created_at:asc'
         	},
         complete: function(){	
         	console.log('Done with the AJAX Call');
         	if(firstPull){
         		console.log('First pull, so calling the Genre pulldata() function');
-        		//pullData(genreUrl, genreOffSetCounters, 'genre');	
+        		pullData(genreUrl, genreOffSetCounters, 'genre');	
         	}
         },	
         success: function(data){
         	//Not Successful, but Data was pulled. 
         	console.log('called success: in AJAX call') ;
+        },
+        beforeSend:function(xhr){
+        	console.log('trying to set request header');
+			xhr.setRequestHeader("X-Mashape-Authorization", "LRvm3vxiEQmshkEwtQG4T9bvtltop1lz3VZjsnPNh1NDFpFH1K");
+			console.log('set the header');
+        },
+        error(xhr, textStatus, errorThrown){
+        	if(xhr.readyState < 4){
+        		//Means the call was in
+        		xhr.abort();
+
+        	}
         }
 
+
+ 		}).done(function(data){
+ 			showResults(data);
  		});
 }
 
@@ -175,11 +220,14 @@ function pullData(url, offSetNum,type, firstPull){
 
 
  $(document).ready(function(){
- 		//console.log("executing json Giant bomb api for the first time."); 		
- 		//var firstPull = true ;
- 		//pullData(platformUrl, platformOffSetCounters,'platform', firstPull );
- 		
-
+ 	//console.log("executing json Giant bomb api for the first time."); 		
+ //	var firstPull = true ;
+// pullData(platformUrl, platformOffSetCounters,'platform', firstPull );
+ 	//Getting the platform data
+	// for (var i = 0; i < localStorage.length; i++){
+ //     console.log(("Console name is " + localStorage.getItem(localStorage.key(i)) + " id: " + localStorage.key(i)));
+ // }
+	
 
  });
 
@@ -270,11 +318,10 @@ function pullFilteredData(){
         	console.log('Done with the AJAX Call');
      //   	Call recursively until all the results are done.
         	if( mixerNumberOffSet%100 == 0 || mixerNumberOffSet==0 ){
-						console.log('pulling more data because the offset is a mutiple of 100');
+						console.log('pulling more data because the offset is a mutiple of 50');
 						pullFilteredData();
 				}else{
-					//The call is over, randomize the data
-					randomizeData();
+					
 				}
         },	
         success: function(data){
@@ -326,7 +373,6 @@ function displayRandomGame(gameId){
 }
 
 function sendToScreen(results){
-
 	console.log('name of selected game is .... ' +  results.result,name); 
 
 }
@@ -337,12 +383,18 @@ function sendToScreen(results){
 ///////////////////////////////////////////////////////////////////////////
  function generateButtons(url , offSetNum , type){
  					console.log('in function GENERATEBUTTONS()');
-					if( offSetNum%100 == 0 || offSetNum==0 ){
+					if( offSetNum%50 == 0 || offSetNum==0 ){
 						console.log('pulling more data');
 						pullData(url, offSetNum, type,false);
 						//set the default buttons to 0. Only add buttons from this function
 						defaultAmountButtons = 0;
-					}	
+					}else{
+						console.log('Done with all the platform data NOT PULLING ANYMORE');
+						for(var i =0 ; i<platformArray.length;i++){
+							console.log(
+								"Console name: " + platformArray[i].name + "  id: "+ platformArray[i].id);
+						}
+					}
 					var column ;
 					//Change this to type 
 					if(type == 'platform'){
@@ -376,7 +428,8 @@ function sendToScreen(results){
 				}	
 			});
 			switchOffAll();
- }
+		    //console.log(genreArray);
+		}
 
 
 //Changing the button states
