@@ -40,7 +40,7 @@ var requestData = {
     dataType:'json',
     data:{
     fields:'name,id,cover,summary,platforms,genres,release_dates,time_to_beat,rating,genres,aggregated_rating',
-    limit:10,
+    limit:50,
     order:'created_at:asc'
 	}
 };
@@ -195,16 +195,27 @@ function cacheData(result){
 		}else{
 			timeToBeat= undefined;	
 		}
-		var rating  = value.rating;
+		var rating;
+		if(value.aggregated_rating !== undefined){
+			rating = value.aggregated_rating;
+		}else if(value.rating){
+			rating = value.rating;
+		}else{
+			rating = undefined;
+		}
 		console.log("rating is " + rating);
 		//Can be an array you know
-		i
+
 			var genres =[];
-			for(var i = 0;i<value.genres.length;i++){
-				 var id = value.genres[i];
-				 genres.push(igbdGenreCodes[id]);
-				console.log('Genre is at index '  + i + ' is ' +  genres[i]);
-			}
+			if(value.genres !== undefined){
+		 		for(var i = 0;i<value.genres.length;i++){
+					 var id = value.genres[i];
+					 genres.push(igbdGenreCodes[id]);
+					console.log('Genre is at index '  + i + ' is ' +  genres[i]);
+				}
+		}else{
+			genres = undefined;
+		}
 		var gameEntry = {
 			//name,id,cover,summary,platforms,genres,release_dates,time_to_beat,rating
 			name:name,
