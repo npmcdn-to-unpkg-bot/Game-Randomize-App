@@ -2,9 +2,17 @@
 //to be a lot of formating the data.
 /*
 Data is nicely formatted?
+TIME TO
+
+
+//Whats the problem? 
+//Why is the data all mixed up, is 10000 pulls only give ~6800 games, maybe some ajax calls get snuffed, for example if 2 ajax.
+//calls end at the same time, then the offset might get incremented by 100 and miss some data.
 
 */
 //Constants for the platform, taken from local storage. 
+var igdbOffset = 0;
+
 igdbPlatformCodes = {};
 igbdGenreCodes= {};
 	for (var i = 0; i < localStorage.length; i++){
@@ -23,6 +31,7 @@ igbdGenreCodes= {};
 
 	
 //console.log(igdbPlatformCodes);
+console.log(igbdGenreCodes);
 	
 
 
@@ -34,18 +43,6 @@ igbdGenreCodes= {};
 var offSetNumber= 0;
 
 
-var requestData = {
-	url:'https://igdbcom-internet-game-database-v1.p.mashape.com/games/?',	
-    type: "GET",
-    dataType:'json',
-    data:{
-    fields:'name,id,cover,summary,platforms,genres,release_dates,time_to_beat,rating,genres,aggregated_rating',
-    limit:50,
-    order:'created_at:asc'
-	}
-};
-
-var response = ajaxCall(requestData); 
 
 
 
@@ -72,12 +69,45 @@ function ajaxCall(requestData){
 		}
 	}).done(function (data) {
 	console.log('AJAX Call is done!');
-	// console.log(data);
- //    for(var i=0;i<data.length;i++){
- //    	console.log(data[i].name);
- //    }
     cacheData(data);
   });
+}
+
+ $(document).ready(function(){
+//  	while(igdbOffset<=9900){
+//  	$.when(
+//  		console.log('Doing ajax call in the when section '),
+//  			 ajaxCall(createRequestData()),
+//  			 incrementOffset()
+// 	 ).then(function(){
+// 	 	console.log("ajax call done starting another one"),
+// 	 	ajaxCall(createRequestData()),
+// 	 	incrementOffset()
+//  	});	
+// }
+	//console.log('CALLED AN AJAX CALL');
+ajaxCall(createRequestData());
+
+ });
+
+
+function incrementOffset(){
+	igdbOffset+=50;
+}
+
+function createRequestData(){
+var requestData = {
+			url:'https://igdbcom-internet-game-database-v1.p.mashape.com/games/?',	
+    		type: "GET",
+    		dataType:'json',
+    		data:{
+    		fields:'name,id,cover,summary,platforms,genres,release_dates,time_to_beat,rating,genres,aggregated_rating,url',
+    		limit:10,
+    		offset:igdbOffset,
+    		order:'created_at:asc'
+		}
+	}
+return requestData;
 }
 
 
@@ -93,9 +123,9 @@ function dateConverter(UNIX_timestamp){
   var months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
   var year = a.getFullYear();
   console.log('converted year is' + a.getFullYear());
-  var month = months[a.getMonth()];
+  var month = a.getMonth();
   var date = a.getDate();
-  var time = date + ' ' + month + ' ' + year ;
+  var time = year+ '-'+ date + "-"+ month ;
   return time;
 }
 
@@ -120,13 +150,20 @@ function cacheData(result){
 	$.each(result, function(index,value){
 		var name = value.name;
 		console.log('name is ' +name); 
-		var id = value.id;
-		console.log('id is ' +id);
+		var mainId = value.id;
+		console.log('id is ' +mainId);
+		var gameUrl  = value.url;
+		console.log('url is ' + gameUrl );
 		var summary =  value.summary;
 		console.log('summary is ' + summary); 
-		var imageId =  value.cover.cloudinary_id;
+		var imageId;
+		if(value.cover!==undefined){
+		 imageId =  value.cover.cloudinary_id;
 		var imageUrl = 'https://res.cloudinary.com/igdb/image/upload/t_cover_big/'+ imageId+'.jpg';
 		console.log('image url is '  + imageUrl);
+	}else{
+		imageId=null;
+	}
 		//This is an array
 		var releaseDates = value.release_dates;
 		allReleaseDates=[];
@@ -146,24 +183,25 @@ function cacheData(result){
 			console.log(" Release date is " + allReleaseDates[i] + " on platform:  " + allPlatformsNames[i]);
 		}
 		//SQL needs to had apstromphes double escaped
-			for(var i=0;i<name.length;i++){
-				if(name[i]==='\''){
-					name = insertAt(name, i , '\'');
-					console.log('Found apostrophe at index ' + i );
-					i++;
-				}
-			}
-			console.log('New name is ' + name);
-			if(summary!==undefined){
-				for(var i=0;i<summary.length;i++){
-					if(summary[i]==='\''){
-						console.log('Found apostrophe at index DECK' + i );
-						summary  = insertAt(summary, i , '\'');
-						i++;
-					}
-				}
-		}
-			console.log('New Summary is '  + summary); 
+			// for(var i=0;i<name.length;i++){
+			// 	if(name[i]==='\''){
+			// 		name = insertAt(name, i , '\'');
+			// 		console.log('Found apostrophe at index ' + i );
+			// 		i++;
+			// 	}
+			// }
+
+		// 	console.log('New name is ' + name);
+		// 	if(summary!==undefined){
+		// 		for(var i=0;i<summary.length;i++){
+		// 			if(summary[i]==='\''){
+		// 				console.log('Found apostrophe at index DECK' + i );
+		// 				summary  = insertAt(summary, i , '\'');
+		// 				i++;
+		// 			}
+		// 		}
+		// }
+			//console.log('New Summary is '  + summary); 
 			//This is also unix nano seoncds
 			// var timeToBeatUnixNormal = ;
 			// var timeToBeatUnixHaste = ;
@@ -214,23 +252,54 @@ function cacheData(result){
 					console.log('Genre is at index '  + i + ' is ' +  genres[i]);
 				}
 		}else{
-			genres = undefined;
+			genres = null;
 		}
 		var gameEntry = {
-			//name,id,cover,summary,platforms,genres,release_dates,time_to_beat,rating
 			name:name,
-			id:id,
+			id:mainId,
 			genre:genres,
 			cover:imageUrl,
 			summary:summary,
 			platform:allPlatformsNames,
 			releaseDate: allReleaseDates,
 			howLong:timeToBeat,
-			rating:rating
+			rating:rating,
+			url:gameUrl
 		};
+
+		for(var key in gameEntry) {
+    		console.log(key + " is: " + gameEntry[key]);
+    		if(gameEntry[key]===undefined){
+    			gameEntry[key]=null;
+    			console.log(gameEntry[key]);
+    		}
+		}
+
 		allGamesEntry.push(gameEntry);
 		console.log(gameEntry);
+		insertGamesintoDataBase(gameEntry);
+			//}
 	});
 }
 
 
+function insertGamesintoDataBase(data){
+		var request =  $.ajax({
+ 			url: 'http://localhost/gameApp/php/insertgames.php',
+    	    type: "post",
+    	    data
+			 });
+    	// Callback handler that will be called on success
+    	request.done(function (response, textStatus, jqXHR){
+    	    // Log a message to the console
+    	    console.log("Hooray, it worked!");
+    	    console.log(response);
+    	});
+	    	// Callback handler that will be called on failure
+	    	request.fail(function (jqXHR, textStatus, errorThrown){
+	    	    // Log the error to the console
+	    	    console.error(
+	    	        "The following error occurred: "+
+	    	        (textStatus, errorThrown));
+    	    });
+}

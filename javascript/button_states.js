@@ -20,7 +20,7 @@ function cachePlatformData(result){
 	$.each(result, function(index,value) {
 			var mainName = value.name;
 			var mainId = value.id;
-			localStorage.setItem('plat ' + mainId, mainName);
+			localStorage.setItem( ('plat ' + mainId), mainName);
 			platformOffset++;
 			console.log('Pushed '  + mainName + " with id: "  + mainId + " to localStorage Platform");
 		});
@@ -30,13 +30,12 @@ function cacheGenreData(result){
 	console.log('in the show results section');
 	$.each(result, function(index,value) {
 			var mainName = value.name;
-			var mainId = value.id;
-			localStorage.setItem('genre '+ mainId, mainName);
+			var mainId = value.id;	
+			localStorage.setItem(('genre '+ mainId), mainName);
 			genreOffSetCounters++;
 			console.log('Pushed '  + mainName + " with id: "  + mainId + " to localStorage Genre");
 		});
 	console.log('done WITH cacheGenreData() function');
-	
 }
 /*
 Generate buttons from local storage for both platforms and genres. Makes buttons for all data, and hides the rest
@@ -50,7 +49,7 @@ function generatePlatformButtonsfromCache(numberOfDeafaultButtons){
 			var unCodedId = localStorage.key(i);
 			var realId = (unCodedId.substr(unCodedId.indexOf(" "), unCodedId.length)).trim();
 			var mainName =  localStorage.getItem(unCodedId);
-			var mainId = realId;
+			var mainId =  localStorage.getItem(unCodedId);
 			var button =  $('<button></button>');
 			button.addClass('game_button');
 			button.attr('id', mainId);
@@ -58,9 +57,9 @@ function generatePlatformButtonsfromCache(numberOfDeafaultButtons){
 			column = $('.button_column.platform');
 			column.append(button); 
 			platButtonsAdded++;
-			console.log('Platform buttons added at ' + platButtonsAdded);
+			//console.log('Platform buttons added at ' + platButtonsAdded);
 			if(platButtonsAdded  >=numberOfDeafaultButtons){
-				console.log('Hidling buttons in platform');
+			//	console.log('Hidling buttons in platform');
 				button.hide()
 			}
 		}
@@ -74,7 +73,7 @@ function generateGenreButtonsFromCache(numberOfDeafaultButtons){
 			var unCodedId = localStorage.key(i);
 			var realId = (unCodedId.substr(unCodedId.indexOf(" "), unCodedId.length)).trim();
 			var mainName =  localStorage.getItem(unCodedId);
-			var mainId = realId;
+			var mainId = localStorage.getItem(unCodedId);
 			var button =  $('<button></button>');
 			button.addClass('game_button');
 			button.attr('id', mainId);
@@ -101,7 +100,7 @@ function platformPullData(){
         		 fields:'name,id',
         		 offset: platformOffset,
         		 limit:50,
-        		 order:'created_at:asc'
+        		 order:'release_dates.date:desc'
         	},
         complete: function(){	
         	console.log('Done with the AJAX Call');
@@ -183,6 +182,7 @@ function genrePullData(){
  	console.log("executing json Giant bomb api for the first time."); 		
  	if(window.localStorage.length<=0){
  		platformPullData();
+ 		console.log('CALLING GENRE PULL DATA');
  		genrePullData();
 	}else{
 		generatePlatformButtonsfromCache(6);
@@ -328,10 +328,6 @@ function sendToScreen(results){
 }
 
 
-
-
-
-
 //Changing the button states
 $(document).on('click' , '.game_button' , function(){
 		console.log( $(this).text());
@@ -339,24 +335,15 @@ $(document).on('click' , '.game_button' , function(){
 					console.log('removed active class');
 					$(this).removeClass("active");
 				}else{
-					console.log('added active class ')
-					$(this).addClass('active')
+					//Reset the selected arrays	 
+					console.log('added active class ');
+					console.log('Id: ' +  $(this).attr('id'));
+					$(this).addClass('active');
 				}
 	});
 
 
 
-
-/*
-One Ajax Call to pull all possible games and cache them in the browser using Javascript
-*/
-
-$(function randomizeButtonClick(){
- 	$(".execute_button").click(function(){
- 		console.log('Executing random search'); 		
- 		gatherUserPreferences(); 
- 	});
- });
 
 ////////////////////////////////////// Cache
 var mainGamesPullOffset =  0;
