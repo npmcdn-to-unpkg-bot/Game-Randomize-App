@@ -74,8 +74,9 @@ function gatherButtonValues (){
 				console.log( 'currentButton is not hidden and active'  + tempJQ.attr('id'));
 				selectedYears.push(tempId);
 			}
-			console.log(selectedYears);
+			//console.log(selectedYears);
 	});
+
 	//Put the them in an object to send as data through the post
 	data = {
 		platformArray:selectedPlats , 
@@ -84,6 +85,8 @@ function gatherButtonValues (){
 		timeArray:selectedTimes,
 		yearArray:selectedYears
 	}
+
+	console.log(data);
 	sendSelectedData(data);
 }
 

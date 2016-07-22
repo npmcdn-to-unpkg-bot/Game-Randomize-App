@@ -69,30 +69,24 @@ function ajaxCall(requestData){
 		}
 	}).done(function (data) {
 	console.log('AJAX Call is done!');
-    cacheData(data);
+	// if(igdbOffset<=20){
+	// 	$.when(
+	 	    cacheData(data)
+	// 	    ).then(function(){
+	// 	    	incrementOffset(),
+	// 	    	ajaxCall(createRequestData())
+	// 	    });
+	// }
   });
 }
 
  $(document).ready(function(){
-//  	while(igdbOffset<=9900){
-//  	$.when(
-//  		console.log('Doing ajax call in the when section '),
-//  			 ajaxCall(createRequestData()),
-//  			 incrementOffset()
-// 	 ).then(function(){
-// 	 	console.log("ajax call done starting another one"),
-// 	 	ajaxCall(createRequestData()),
-// 	 	incrementOffset()
-//  	});	
-// }
-	//console.log('CALLED AN AJAX CALL');
-ajaxCall(createRequestData());
-
- });
+//ajaxCall(createRequestData());
+ }); //end of document
 
 
 function incrementOffset(){
-	igdbOffset+=50;
+	igdbOffset+=10;
 }
 
 function createRequestData(){
@@ -102,7 +96,7 @@ var requestData = {
     		dataType:'json',
     		data:{
     		fields:'name,id,cover,summary,platforms,genres,release_dates,time_to_beat,rating,genres,aggregated_rating,url',
-    		limit:10,
+    		limit:50,
     		offset:igdbOffset,
     		order:'created_at:asc'
 		}
@@ -135,8 +129,13 @@ UNIX_timestamp = Number(UNIX_timestamp);
 var h = Math.floor(UNIX_timestamp / 3600);
 var m = Math.floor(UNIX_timestamp % 3600 / 60);
 var s = Math.floor(UNIX_timestamp % 3600 % 60);
-return ((h > 0 ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") + s); 
-
+var rounded = Math.round(m);
+if(rounded >=31){
+	//Put another hour
+	h++; 
+}
+//return ((h > 0 ? h + ":" + (m < 10 ? "0" : "") : "") + m + ":" + (s < 10 ? "0" : "") + s); 
+return h;
 }
 
 
@@ -183,24 +182,24 @@ function cacheData(result){
 			console.log(" Release date is " + allReleaseDates[i] + " on platform:  " + allPlatformsNames[i]);
 		}
 		//SQL needs to had apstromphes double escaped
-			// for(var i=0;i<name.length;i++){
-			// 	if(name[i]==='\''){
-			// 		name = insertAt(name, i , '\'');
-			// 		console.log('Found apostrophe at index ' + i );
-			// 		i++;
-			// 	}
-			// }
+			for(var i=0;i<name.length;i++){
+				if(name[i]==='\''){
+					name = insertAt(name, i , '\'');
+					console.log('Found apostrophe at index ' + i );
+					i++;
+				}
+			}
 
-		// 	console.log('New name is ' + name);
-		// 	if(summary!==undefined){
-		// 		for(var i=0;i<summary.length;i++){
-		// 			if(summary[i]==='\''){
-		// 				console.log('Found apostrophe at index DECK' + i );
-		// 				summary  = insertAt(summary, i , '\'');
-		// 				i++;
-		// 			}
-		// 		}
-		// }
+			console.log('New name is ' + name);
+			if(summary!==undefined){
+				for(var i=0;i<summary.length;i++){
+					if(summary[i]==='\''){
+						console.log('Found apostrophe at index DECK' + i );
+						summary  = insertAt(summary, i , '\'');
+						i++;
+					}
+				}
+		}
 			//console.log('New Summary is '  + summary); 
 			//This is also unix nano seoncds
 			// var timeToBeatUnixNormal = ;
@@ -274,7 +273,6 @@ function cacheData(result){
     			console.log(gameEntry[key]);
     		}
 		}
-
 		allGamesEntry.push(gameEntry);
 		console.log(gameEntry);
 		insertGamesintoDataBase(gameEntry);

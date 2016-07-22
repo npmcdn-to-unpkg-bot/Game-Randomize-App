@@ -16,12 +16,13 @@ if(!$conn){
 	die('Could not connect: ' . mysql_error());
 }
 
- //  $database = mysql_select_db("igdb", $conn);
    print_r($_POST);
-	//genre is an array that goes into a separate  table
-  // releasedate and platoform indexes go into another table but in one row.
-   $genreQuery = "";
-   $releaseQuery = "";
+
+   $genreStatement;
+   $releaseStatement; 
+
+   $genreQuery ;
+   $releaseQuery ;
    $name = $_POST['name'];
    //$nameEscaped = mysqli_real_escape_string($conn, $name); 
    $id =$_POST['id'];
@@ -44,21 +45,7 @@ if(!$conn){
    $genreLength = count($rawGenre);
 //   $genreTablesql = "CREATE TABLE genres( ";
    $genreInsertsql  = [];
-   for ($i = 0; $i < $genreLength; $i++) {
-     		//$genreTablesql = $genreTablesql . " \n genre_name text";
-     		//Not about to end put another comma
-     		//if($i != $genreLength-1){
-     		//	$genreTablesql = $genreTablesql . "," ;
-     		//}
-     			$genreInsertsql[$i] = " \n INSERT INTO genres (genre_id,genre_name)  VALUES( " .$id. "," .  "'". $rawGenre[$i] . "'"  . ");";
-     			 echo $genreInsertsql[$i] . "\n"; 
- 		   if(mysqli_query($conn, $genreInsertsql[$i]) ===FALSE){
- 		   		('could not enter data: ' .mysql_error());
- 		   }else{
- 		echo "data INSERTED DAWG3" . "\n";
- 	}
-
-}
+   
  //$genreTablesql = $genreTablesql. ")";
  ////echo  $genreTablesql."\n\n" ;
 
@@ -68,22 +55,37 @@ if(!$conn){
  //yea maybe
  $rawPlatforms= $_POST['platform'];
  $largestLength; 
+ 
+ //$releaseInfoTableSql = "CREATE TABLE release_info( ";
+ $releaseInsertDataArray = [];
  if(count($rawReleaseDate) > count($rawPlatforms)){
  		$largestLength = count($rawReleaseDate);
  }else{
  		$largestLength = count($rawPlatforms);
  }
+   
+    $query = "INSERT INTO games2(name,id,cover,summary,platforms,genres,release_date,time_to_beat,rating,url)
+    VALUES('$name','$id','$cover','$summary','$release_info_id',
+    '$genre_id','$release_info_id','$time_to_beat','$rating','$url')";
 
- //$releaseInfoTableSql = "CREATE TABLE release_info( ";
- $releaseInsertDataArray = [];
- //if(!empty($))
-    for ($i = 0; $i < $largestLength; $i++) {
-     		// $releaseInfoTableSql = $releaseInfoTableSql . " \n platform_name text, " . 
-     		// " \n release_date text";
-     		// //Not about to end put another comma
-     		// if($i != $largestLength-1){
-     		// 	$releaseInfoTableSql = $releaseInfoTableSql . "," ;
-     		// }
+    echo $query; 
+      if(mysqli_query($conn, $query) ===FALSE){
+ 		   		('could not enter data: ' .mysql_error());
+ 		   }else{
+ 		echo "data INSERTED DAWG!!" . "\n";
+ 	}
+
+ for ($i = 0; $i < $genreLength; $i++) {
+     			$genreInsertsql[$i] = " \n INSERT INTO genres (genre_id,genre_name)  VALUES( " .$id. "," .  "'". $rawGenre[$i] . "'"  . ");";
+     			 echo $genreInsertsql[$i] . "\n"; 
+ 		   if(mysqli_query($conn, $genreInsertsql[$i]) ===FALSE){
+ 		   		('could not enter data: ' .mysql_error());
+ 		   }else{
+ 		echo "data INSERTED DAWG3" . "\n";
+ 	}
+
+}
+ for ($i = 0; $i < $largestLength; $i++) {
      		$releaseInsertDataArray[$i] = " \n INSERT INTO release_info(release_id, platform_name, release_date)  VALUES( " . 
      		$id . "," . 
      		"'" .$rawPlatforms[$i] . "'"  . "," . 
@@ -93,24 +95,12 @@ if(!$conn){
      		     if(mysqli_query($conn, $releaseInsertDataArray[$i]) ===FALSE){
  		   		('could not enter data: ' .mysql_error());
  		   }else{
- 		echo "data INSERTED DAWG3" . "\n";
+ 		echo "data INSERTED DAWG2" . "\n";
  	}
-
-
 }
 
-//$releaseInfoTableSql = $releaseInfoTableSql. ")";
-//echo $releaseInfoTableSql . "\n";
- 
-    $query = "INSERT INTO games2(name,id,cover,summary,platforms,genres,release_date,time_to_beat,rating,url)
-    VALUES('$name','$id','$cover','$summary','$release_info_id',
-    '$genre_id','$release_info_id','$time_to_beat','$rating','$url')";
 
-      if(mysqli_query($conn, $query) ===FALSE){
- 		   		('could not enter data: ' .mysql_error());
- 		   }else{
- 		echo "data INSERTED DAWG3" . "\n";
- 	}
+
+
    $conn->close();
 ?>
-
