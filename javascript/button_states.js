@@ -16,7 +16,7 @@ var platformArray= [] ;
 var genreArray = {};
 
 function cachePlatformData(result){
-	console.log('in the show results section');
+	console.log('in cache platform data');
 	$.each(result, function(index,value) {
 			var mainName = value.name;
 			var mainId = value.id;
@@ -27,7 +27,7 @@ function cachePlatformData(result){
 	console.log('done WITH cachePlatformData() function');
 }
 function cacheGenreData(result){
-	console.log('in the show results section');
+	console.log('in cache genre data');
 	$.each(result, function(index,value) {
 			var mainName = value.name;
 			var mainId = value.id;	
@@ -37,36 +37,104 @@ function cacheGenreData(result){
 		});
 	console.log('done WITH cacheGenreData() function');
 }
+
+/*
+Function to resort the array so that the platforms with the earlier ids get generated first.... \
+So there are consoles that people actually use at first.
+*/
+function resortPlatforms(){
+		if(localStorage.length > 0){
+				var localStorageArray = new Array();
+				for(var i =0 ; i<localStorage.length;i++){
+					if(localStorage.key(i).includes("plat")){
+						//Strip out the plat from the key
+						var defaultLocalKey = localStorage.key(i);
+						console.log("Default key is... " + defaultLocalKey);
+						var newKey  = (defaultLocalKey.substr(defaultLocalKey.indexOf(" "), defaultLocalKey.length)).trim();
+						//Left blank
+						//var newKey = "";
+						console.log("New key is " + newKey );
+						console.log("Item at index i= "  +  i + " is " + localStorage.getItem(localStorage.key(i)));
+					   localStorageArray[i] = newKey + " " + localStorage.getItem(localStorage.key(i));
+					}
+				}
+			  
+		}
+		 var sortedArray = localStorageArray.sort(naturalCompare);
+		 console.log(sortedArray);
+		 console.log(sortedArray.length);
+		 for(var i = 0 ; i<sortedArray.length;i++){
+		 		if(sortedArray[i]!==undefined){
+		 			console.log("i ====== ?  "  + sortedArray[i] );
+					var noNumbersPart = sortedArray[i].substr(2,sortedArray[i].length);
+		 			var numbersPart = sortedArray[i].substr(0,2);
+					var convertedNumbersPart = numbersPart.replace(/[^a-z+]+/gi, '');
+					sortedArray[i] =  noNumbersPart + convertedNumbersPart;
+				}
+		}	 
+		console.log(sortedArray);
+   		return sortedArray;
+}
+
+
+/*
+Dont understand this function... BUT IT WORKS! oh its regex 
+*/
+function naturalCompare(a, b) {
+    var ax = [], bx = [];
+
+    a.replace(/(\d+)|(\D+)/g, function(_, $1, $2) { ax.push([$1 || Infinity, $2 || ""]) });
+    b.replace(/(\d+)|(\D+)/g, function(_, $1, $2) { bx.push([$1 || Infinity, $2 || ""]) });
+    
+    while(ax.length && bx.length) {
+        var an = ax.shift();
+        var bn = bx.shift();
+        var nn = (an[0] - bn[0]) || an[1].localeCompare(bn[1]);
+        if(nn) return nn;
+    }
+
+    return ax.length - bx.length;
+}
+
+
 /*
 Generate buttons from local storage for both platforms and genres. Makes buttons for all data, and hides the rest
 to ensure there is only on long load time. 
 */
 
 function generatePlatformButtonsfromCache(numberOfDeafaultButtons){
+	console.log("In generate platform buttons"); 
 	var platButtonsAdded=0;
-	for (var i = 0; i < localStorage.length; i++){
-		if(localStorage.key(i).includes("plat")){
-			var unCodedId = localStorage.key(i);
-			var realId = (unCodedId.substr(unCodedId.indexOf(" "), unCodedId.length)).trim();
-			var mainName =  localStorage.getItem(unCodedId);
-			var mainId =  localStorage.getItem(unCodedId);
+	var array = resortPlatforms(); 
+	for (var i = 0; i < array.length; i++){
+		//if(localStorage.key(i).includes("plat")){
+
+			//var unCodedId = localStorage.key(i);
+			//var realId = (unCodedId.substr(unCodedId.indexOf(" "), unCodedId.length)).trim();
+		//	var mainName =  localStorage.getItem(unCodedId);
+		//	var mainId =  localStorage.getItem(unCodedId);
+			var mainName =  array[i];
+			var mainId =  array[i];
+			console.log("Main name is: " + mainName + " and Main id is: " + mainId + " at offset i = " + i );
 			var button =  $('<button></button>');
-			button.addClass('game_button');
-			button.attr('id', mainId);
-			button.text(mainName);
-			column = $('.button_column.platform');
-			column.append(button); 
-			platButtonsAdded++;
-			//console.log('Platform buttons added at ' + platButtonsAdded);
-			if(platButtonsAdded  >=numberOfDeafaultButtons){
-			//	console.log('Hidling buttons in platform');
-				button.hide()
-			}
-		}
+			 button.addClass('game_button');
+			 button.attr('id', mainId);
+			 button.text(mainName);
+			 column = $('.button_column.platform');
+			 column.append(button); 
+			 platButtonsAdded++;
+			 console.log('Platform buttons added at ' + platButtonsAdded);
+			 if(platButtonsAdded  >=numberOfDeafaultButtons){
+				console.log('Hidling buttons in platform');
+				button.hide();
+			 }
+
+		//}
 	}
 }
 
 function generateGenreButtonsFromCache(numberOfDeafaultButtons){
+	console.log("In generate Genre buttons"); 
 	var genreButtonsAdded=0; 
 	for (var i = 0; i < localStorage.length; i++){
 		if(localStorage.key(i).includes("genre")){
@@ -100,7 +168,7 @@ function platformPullData(){
         		 fields:'name,id',
         		 offset: platformOffset,
         		 limit:50,
-        		 order:'release_dates.date:desc'
+        		 order:'created_at:desc'
         	},
         complete: function(){	
         	console.log('Done with the AJAX Call');
@@ -129,6 +197,7 @@ function platformPullData(){
         }
  		}).done(function(data){
  			cachePlatformData(data);
+ 			//Also call the genre from here to
  		});
 }
 
@@ -174,20 +243,20 @@ function genrePullData(){
  		}).done(function(data){
  			console.log('cacheGenreData called in done function');
  			cacheGenreData(data);
-
  		});
 }
 
  $(document).ready(function(){
- 	console.log("executing json Giant bomb api for the first time."); 		
- 	if(window.localStorage.length<=0){
- 		platformPullData();
- 		console.log('CALLING GENRE PULL DATA');
- 		genrePullData();
-	}else{
-		generatePlatformButtonsfromCache(6);
-		generateGenreButtonsFromCache(6);
-	}
+ // 	console.log("executing json Giant bomb api for the first time."); 		
+ // 	if(window.localStorage.length<=0){
+ // 		platformPullData();
+ // 		console.log('CALLING GENRE PULL DATA');
+ // 		genrePullData();
+	// }else{
+	// 	console.log("CALLING THE  GENREATEBUTTONS FROM CACHE FUNCTION");
+	// 	generatePlatformButtonsfromCache(6);
+	// 	generateGenreButtonsFromCache(6);
+	// }
  });
 
  

@@ -4,7 +4,7 @@
 
 
 html{
-	background-image: url(../images/escheresque_ste/escheresque_ste.png);
+	
 }
 
 body{
@@ -14,21 +14,169 @@ body{
 
 section{
 	width: 100%;
-	/*padding: 0 7%;*/
+	/*padding: 0 7%;
+	*/
+	border: solid black 1px;
 	display: table;
+	/*
 	margin: 0;
 	max-width: none;
 	height: 100vh;
 	border: groove 5px;
+	*/
 }
+
+
+.first_page:before{
+  content: "";
+  position: fixed;
+  left: 0;
+  right: 0;
+  display: block;
+  /*
+    background-image: url(../images/escheresque_ste/escheresque_ste.png);
+    */
+  width: 100%;
+  height: 100%;
+  -webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);
+
+}
+.first_page #main_banner{
+	/*-webkit-filter: blur(5px);
+  -moz-filter: blur(5px);
+  -o-filter: blur(5px);
+  -ms-filter: blur(5px);
+  filter: blur(5px);*/
+}
+
+.first_page #main_banner header{
+	width:60%;
+	color: green;
+	padding: 5%;
+	/*
+	background-color:#E399CD;	
+	*/ 
+	border-radius: 25px;
+	height: 50%;
+	padding-top: 10%;
+	/* Center it */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    /* bring your own prefixes */
+    transform: translate(-50%, -50%);
+  filter: none;
+ 
+
+}
+
+	
+.image_table {
+	/*position: absolute;
+    top: 0%;
+    left: 0%;
+	background-color: red;
+	color:red;
+	height: 100vh;*/
+	  line-height: 0;
+   -webkit-column-count: 5;
+   -webkit-column-gap:   0px;
+   -moz-column-count:    5;
+   -moz-column-gap:      0px;
+   column-count:         5;
+   column-gap:           0px;
+}
+
+.image_table img{
+  width: 100% !important;
+  height: auto !important;
+ -/*webkit-animation: mymove 250s infinite;  
+   animation: mymove 250s infinite;*/
+   position: relative;
+
+  }
+
+/*
+.test{
+	position: relative;
+	height: 200px;
+	width: 200px;
+	background-color: red;
+    -webkit-animation: mymove 5s infinite;  
+   animation: mymove 5s infinite;
+}*/
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes mymove {
+     from {top: 0px;}
+    to {top: 4000px;}
+}
+
+/* Chrome, Safari, Opera */
+@-webkit-keyframes mymove {
+     from {top: 0px;}
+    to {top: 4000px;}
+}
+
+
+
+@media (max-width: 1200px) {
+  .image_table {
+  -moz-column-count:    4;
+  -webkit-column-count: 4;
+  column-count:         4;
+  }
+}
+@media (max-width: 1000px) {
+  .image_table {
+  -moz-column-count:    3;
+  -webkit-column-count: 3;
+  column-count:         3;
+  }
+}
+@media (max-width: 800px) {
+  .image_table {
+  -moz-column-count:    2;
+  -webkit-column-count: 2;
+  column-count:         2;
+  }
+}
+@media (max-width: 400px) {
+  .image_table{
+  -moz-column-count:    1;
+  -webkit-column-count: 1;
+  column-count:         1;
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
 
 .first_page{
 	height: 100vh;
+	border: solid black 1px;
+	top:0px;
+	left: 0px;
+	/*
+	background-image: url(../images/escheresque_ste/escheresque_ste.png);
+	background-color: #ffffff;
+	*/
 }
 
 .second_page{
 	height: 100vh;
-	
 }
 
 .third_page{
@@ -137,25 +285,33 @@ button.hover{
 	font-family: 'Cuprum', sans-serif;
 	font-weight: 60px;
 	font-size: 400%;
-	color: white;
+	color: black;
 	text-align: center;
-	margin-top: 25%;
+	margin-top: 15%;
+	margin-left: 15%;
 	text-shadow: 2px 2px 4px black;
 	text-transform: uppercase;
 	letter-spacing: 2.0px;
-	height: 30%;
+	height: 40%;
 	min-width: 100%;
+	z-index: 0;
 }
-
-#main_banner header{
-	width:100%;
+/*
+.first_page #main_banner header{
+	width:60%;
 	padding: 5%;
-	background-color: #21DB3F ;
+	background-color:#E399CD;	
 	border-radius: 25px;
-	height: 100%;
-	padding-top: 5%;
+	height: 50%;
+	padding-top: 10%;
 
+    position: fixed;
+    top: 50%;
+    left: 50%;
+
+    transform: translate(-50%, -50%);
 }
+*/
 
 .reveal_box{
 	font-family: 'Cuprum', sans-serif;
@@ -204,5 +360,73 @@ to{width:100%; text-indent:0}
 	font-size: 150%;
 	text-align: center;
 	position: absolute;
-    margin-left: 30%;
+    margin-left: 10%;
+}
+
+.execution_page .container{
+/*
+  width: 210px;
+  height: 140px;
+  */
+  width:500px;
+  height:350px;
+  position: relative;
+  -webkit-perspective: 1000;
+  margin-left: 40%;
+  margin-top: 20%;
+} 
+
+#carousel{
+height: 100%;
+  width: 100%;
+  position: absolute;
+  transform-style: preserve-3d;
+  transition: transform 4s;
+}
+
+.carousel div {
+  transform-style: preserve-3d; 
+}
+
+#carousel figure {
+  display: block;
+  position: absolute;
+  /*
+  width: 186px;
+  height: 116px;
+  */
+  content:url(../images/gray_questionmark.png);
+  width: 220px;
+  height: 170px;
+  left: 10px;
+  top: 10px;
+  border: 2px solid black;
+}
+
+#carousel figure:nth-child(1) { -webkit-transform: rotateY(0deg)   translateZ(687px); 
+background-color: #FF5733;
+}
+#carousel figure:nth-child(2) { -webkit-transform: rotateY(40deg)  translateZ(687px); 
+background-color: #FCC228;
+}
+#carousel figure:nth-child(3) { -webkit-transform: rotateY(80deg)  translateZ(687px); 
+background-color: #D5FC28  ;
+}
+#carousel figure:nth-child(4) { -webkit-transform: rotateY(120deg) translateZ(687px); 
+background-color: #7FF5BC  ;
+}
+#carousel figure:nth-child(5) { -webkit-transform: rotateY(160deg) translateZ(687px); 
+background-color: #43D7E0  ;
+}
+#carousel figure:nth-child(6) { -webkit-transform: rotateY(200deg) translateZ(687px); 
+background-color: #218DED  ;
+}
+#carousel figure:nth-child(7) { -webkit-transform: rotateY(240deg) translateZ(687px); 
+background-color: #8E39F4  ;
+}
+#carousel figure:nth-child(8) { -webkit-transform: rotateY(280deg) translateZ(687px); 
+background-color: #CF21F1  ;
+}
+#carousel figure:nth-child(9) { -webkit-transform: rotateY(320deg) translateZ(687px); 
+background-color: #F89BDC  ;
 }
