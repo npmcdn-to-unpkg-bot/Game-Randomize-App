@@ -2,16 +2,13 @@
 var array; 
 
  $(document).ready(function(){
- 	 generateImages();
+ 	generateImages();
  }); 
 
 
 
 
 
-function moveImages(){
-
-}
 
 
 function generateImages(){
@@ -50,17 +47,23 @@ function generateImages(){
 
 function appendImages(links){
 //Add 10 images to each row.
-	var counter = 0 ;
-	var imageTableNum = "1";
 	$.each(links, function(index,value){
-		//console.log(value);
-		//$('#photos').append('<img src="http://www.lorempixel.com/'+width+'/'+height+'/cats" alt="pretty kitty">');
-
 		console.log('In the each function');
-		var img = $('<img src=' + value+'></img>');
-		img.addClass('game_image');
-		//img.append("<img id='theImg' src="+value+ " />");
-		console.log(img);
-		$(".first_page .image_table").append(img);
+		var div = $('<div><img src='+ value +' /></div>');
+		//var img = $('<img src=' + value+'></img>');
+		div.addClass('grid-item');
+		//div.append(img);
+		console.log(div);
+		$(".first_page .grid").append(div);
 	});	
+//Set up the masonry and the image loaded script
+	var $grid = $('.grid').masonry({
+  		itemSelector: '.grid-item',
+  		columnWidth: '.grid-sizer',
+  		percentPosition: true
+	});
+		$grid.imagesLoaded().progress( function() {
+  		$grid.masonry();
+	}); 
+
 }

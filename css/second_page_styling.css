@@ -1,0 +1,197 @@
+* {
+  box-sizing: border-box; 
+}
+
+html{
+	/*overflow:hidden;*/
+	
+}
+
+body{
+	margin: 0;
+	padding: 0;
+}
+
+section{
+	width: 100%;
+	display: table;
+	margin: 0;
+	max-width: none;
+	height: 100vh;	
+}
+.second_page{
+	overflow: auto;
+}
+
+.sidenav {
+    height: 100%; 
+    width: 0; /* 0 width - change this with JavaScript */
+    position: fixed; 
+    z-index: 1; 
+    top: 0;
+    left: 0;
+    background-color: #111; /* Black*/
+    overflow-x: hidden; /* Disable horizontal scroll */
+    padding-top: 3%; /* Place content 60px from the top */
+    transition: 0.5s; /* 0.5 second transition effect to slide in the sidenav */
+}
+.subpage_background{
+	height: 75%;
+	width: 0;
+	position: fixed;
+	z-index: 1;
+    opacity: 0.5;
+    filter: alpha(opacity=50); 
+    background-color: #111; 
+    overflow-x: hidden;
+    padding-top: 3%;
+    transition: 0.5s;
+}
+
+.subpage{
+	height: 75%;
+	width: 0;
+	position: fixed;
+	z-index: 1;
+	/*opacity: 0.5;
+    filter: alpha(opacity=50); */
+    /* For IE8 and earlier */
+/*    background-color: #111; */
+    overflow-x: hidden;
+    padding-top: 3%;
+    transition: 0.5s;
+}
+
+.subpage header{
+	font-family: 'Quicksand', sans-serif;
+	color: white;
+	text-align: center;
+	font-size: 3em;
+	font-style: bold;
+	text-transform: capitalize;
+	letter-spacing: 2px;
+	text-decoration: underline;
+}
+
+
+/* The navigation menu links */
+.sidenav a {
+	font-family: 'Quicksand', sans-serif;
+	 padding: 20px;
+    font-size: 25px;
+    color: #818181;
+    display: block;
+    transition: 0.3s
+}
+
+/* When you mouse over the navigation links, change their color */
+.sidenav a:hover, .offcanvas a:focus{
+    color: #89A913  ;
+}
+
+#main {
+	font-family: 'Quicksand', sans-serif;
+	font-size: 3em;
+    transition: margin-left .5s;
+    padding: 20px;		
+}
+
+#main header{
+	font-family: 'Quicksand', sans-serif;
+	color: #CAD5AD  ;
+	text-align: center;
+	font-size: 3em;
+	font-style: bold;
+	text-transform: capitalize;
+	letter-spacing: 2px;
+	text-decoration: underline;
+}
+
+
+/* Position and style the close button (top right corner) */
+.closebtn {
+    position: absolute;
+    top: 0;
+    right: 25px;
+    font-size: 36px !important;
+    margin-left: 50px;
+}
+
+/* On smaller screens, where height is less than 450px, change the style of the sidenav (less padding and a smaller font size) */
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 18px;}
+}
+
+.button_column ul{
+	display: inline;
+	float: left;
+	list-style-type: none;
+}
+
+
+  button{
+	display: inline-block;
+	/*margin: 0 10px 0 0 ;*/
+	margin-bottom: 15px;
+	margin-top: 15px;
+	margin-right: 4px;
+	margin-left: 4px;
+	padding: 10px;
+	font-size: 35%;
+	font-family: "Bitter",serif;
+	line-height: 1.8;
+	appearance:none;
+	box-shadow: none;
+	border-radius: 10px;
+	color: #fff;
+	background-color: #A6EA3C;
+	border: none;
+	box-shadow: 0 10px #27496d;
+	font-style: italic;
+	font-size: 1em;
+}
+
+button:hover, 
+button.hover{
+	/*background-color: #A6EA3C  ;
+*/
+background-color: 
+}
+
+ button:active, 
+ button.active{
+ /* Creates push button effect
+ translate shadow down (normal shodow value - pressed down 
+ shadow value = translateY font-variant-ligatures: ) */
+/*  background-color: #417cb8;*/
+background-color: #82BC29  ;
+  box-shadow: 0 5px #27496d;
+  transform: translateY(5px);
+}
+
+.gen_button{
+	font-family: 'Quicksand', sans-serif;
+	font-size: 15px;
+	padding: 2%;
+	margin-top: 5%;
+	margin-left: 43%;
+}
+
+.open_menu{
+	font-family: 'Quicksand', sans-serif;
+	font-size: 50px;
+	bottom: 2%;
+}
+.next_arrow{
+	content: url(../images/forward_arrow.png);
+	margin-left: 90%;
+	margin-top: 15%;
+}
+
+.previous_arrow{
+ content: url(../images/back_arrow.png);
+margin-bottom: 2000px;
+background-color: black;
+
+}

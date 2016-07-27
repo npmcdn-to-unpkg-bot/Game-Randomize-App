@@ -4,6 +4,7 @@
 
 
 html{
+	overflow:hidden;
 	
 }
 
@@ -14,112 +15,127 @@ body{
 
 section{
 	width: 100%;
-	/*padding: 0 7%;
-	*/
 	border: solid black 1px;
 	display: table;
-	/*
 	margin: 0;
 	max-width: none;
 	height: 100vh;
-	border: groove 5px;
-	*/
+	border: groove  5px;
+	
 }
 
 
-.first_page:before{
-  content: "";
-  position: fixed;
-  left: 0;
-  right: 0;
-  display: block;
-  /*
-    background-image: url(../images/escheresque_ste/escheresque_ste.png);
-    */
-  width: 100%;
-  height: 100%;
-  -webkit-filter: blur(5px);
-  -moz-filter: blur(5px);
-  -o-filter: blur(5px);
-  -ms-filter: blur(5px);
-  filter: blur(5px);
 
-}
 .first_page #main_banner{
-	/*-webkit-filter: blur(5px);
-  -moz-filter: blur(5px);
-  -o-filter: blur(5px);
-  -ms-filter: blur(5px);
-  filter: blur(5px);*/
 }
 
-.first_page #main_banner header{
-	width:60%;
-	color: green;
+
+.first_page #main_banner_bg{
+ /* Absolutely position it, but stretch it to all four corners, then put it just behind #search's z-index */
+    width:100%;
+	color: pink;
 	padding: 5%;
-	/*
-	background-color:#E399CD;	
-	*/ 
 	border-radius: 25px;
 	height: 50%;
+	text-align: center;
 	padding-top: 10%;
-	/* Center it */
     position: fixed;
     top: 50%;
     left: 50%;
-    /* bring your own prefixes */
     transform: translate(-50%, -50%);
-  filter: none;
- 
-
+  	background-color: #fff  ;
+  	background: rgb(34,34,34); 
+  	background: rgba(34,34,34,0.75);
+  	z-index: 10;	
+  /* Pull the background 70px higher to the same place as #bg's */
+  background-position: center px;
+  -webkit-filter: blur(10px);
+  filter: url('/media/blur.svg#blur');
+  filter: blur(10px);
 }
+
+.first_page #main_banner header{
+	font-family: 'Quicksand', sans-serif;
+ 	z-index: 100;
+ /* 	background: rgb(34,34,34); 
+  	background: rgba(34,34,34,0.75);*/
+  	font-style: italic;
+	width:60%;
+	color: white;
+	padding: 5%;
+	font-size: 100%;
+	border-radius: 25px;
+	height: 50%;
+	/* Center text*/
+	text-align: center;
+	padding-top: 10%;
+	/*center element */
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+
+
+
+
+
 
 	
-.image_table {
-	/*position: absolute;
-    top: 0%;
-    left: 0%;
-	background-color: red;
-	color:red;
-	height: 100vh;*/
-	  line-height: 0;
-   -webkit-column-count: 5;
-   -webkit-column-gap:   0px;
-   -moz-column-count:    5;
-   -moz-column-gap:      0px;
-   column-count:         5;
-   column-gap:           0px;
+.grid{
+/* background: #000;
+*/ min-width: 100%;
+ min-height: 100%;
+width: 100%;
+height: 100%;
+perspective: 1300px;
 }
 
-.image_table img{
-  width: 100% !important;
-  height: auto !important;
- -/*webkit-animation: mymove 250s infinite;  
-   animation: mymove 250s infinite;*/
-   position: relative;
+	/* clearfix */
+.grid:after {
+  content: '';
+  display: block;
+  clear: both;
+}
+.grid-sizer,
+.grid-item {
+width: 20%
+}
 
-  }
+.grid-item {
+  float: left;
+  transform-style: preserve-3d;
+}
 
-/*
-.test{
-	position: relative;
-	height: 200px;
-	width: 200px;
-	background-color: red;
-    -webkit-animation: mymove 5s infinite;  
-   animation: mymove 5s infinite;
-}*/
+.grid-item.animate{
+	transform: translateZ(400px) translateY(300px) rotateX(-90deg);
+	animation: fallPerspective .8s ease-in-out forwards;
+}
+
+
+
+@keyframes fallPerspective {
+	100% { transform: translateZ(0px) translateY(0px) rotateX(0deg); opacity: 1; }
+}
+
+
+.grid-item img {
+  display: block;
+  width: 100%;
+}
+
 
 /* Chrome, Safari, Opera */
 @-webkit-keyframes mymove {
      from {top: 0px;}
-    to {top: 4000px;}
+    to {top: 100%;}
 }
 
 /* Chrome, Safari, Opera */
 @-webkit-keyframes mymove {
      from {top: 0px;}
-    to {top: 4000px;}
+    to {top: 100%;}
 }
 
 
@@ -152,17 +168,6 @@ section{
   column-count:         1;
   }
 }
-
-
-
-
-
-
-
-
-
-
-
 
 .first_page{
 	height: 100vh;

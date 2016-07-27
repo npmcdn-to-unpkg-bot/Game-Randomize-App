@@ -247,16 +247,16 @@ function genrePullData(){
 }
 
  $(document).ready(function(){
- // 	console.log("executing json Giant bomb api for the first time."); 		
- // 	if(window.localStorage.length<=0){
- // 		platformPullData();
- // 		console.log('CALLING GENRE PULL DATA');
- // 		genrePullData();
-	// }else{
-	// 	console.log("CALLING THE  GENREATEBUTTONS FROM CACHE FUNCTION");
-	// 	generatePlatformButtonsfromCache(6);
-	// 	generateGenreButtonsFromCache(6);
-	// }
+ 	console.log("executing json Giant bomb api for the first time."); 		
+ 	if(window.localStorage.length<=0){
+ 		platformPullData();
+ 		console.log('CALLING GENRE PULL DATA');
+ 		genrePullData();
+	}else{
+		console.log("CALLING THE  GENREATEBUTTONS FROM CACHE FUNCTION");
+		generatePlatformButtonsfromCache(6);
+		generateGenreButtonsFromCache(6);
+	}
  });
 
  
