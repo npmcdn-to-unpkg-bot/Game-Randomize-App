@@ -2,26 +2,36 @@
   box-sizing: border-box; 
 }
 
-html{
+html,body{
 	/*overflow:hidden;*/
-	
-}
-
-body{
 	margin: 0;
+    height: 100%;
 	padding: 0;
 }
 
+/*body{
+	margin: 0;
+	padding: 0;
+}*/
+
 section{
 	width: 100%;
-	display: table;
-	margin: 0;
-	max-width: none;
-	height: 100vh;	
+	/*display: table;
+	margin: 0;*/
+/*	max-width: none;
+*/	height: 100%;
 }
 .second_page{
 	overflow: auto;
+	height: 100vh;
 }
+
+.third_page{
+	overflow: auto;
+	height: 100%;
+	/*background-color: red;*/
+}
+
 
 .sidenav {
     height: 100%; 
@@ -90,17 +100,22 @@ section{
 }
 
 #main {
+	overflow: auto;
+	display: inline-block;
+	width: 100%;
+	height: 100%;
 	font-family: 'Quicksand', sans-serif;
 	font-size: 3em;
     transition: margin-left .5s;
-    padding: 20px;		
+/*    padding: 20px;*/		
 }
 
 #main header{
 	font-family: 'Quicksand', sans-serif;
 	color: #CAD5AD  ;
 	text-align: center;
-	font-size: 3em;
+	/*font-size: 3em;*/
+	font-size: 150%;
 	font-style: bold;
 	text-transform: capitalize;
 	letter-spacing: 2px;
@@ -189,9 +204,52 @@ background-color: #82BC29  ;
 	margin-top: 15%;
 }
 
-.previous_arrow{
- content: url(../images/back_arrow.png);
-margin-bottom: 2000px;
-background-color: black;
 
+#main .previous_arrow  {
+	display: inline-block;
+	margin-left: 0%;
+}
+
+
+#main .previous_arrow a:link {
+    color: red;
+}
+
+/* visited link */
+#main .previous_arrow a:visited {
+    color: green;
+}
+
+/* mouse over link */
+#main .previous_arrow a:hover {
+    color: hotpink;
+}
+
+/* selected link */
+#main .previous_arrow a:active {
+    color: blue;
+}
+
+.third_page .run_button{
+	display: inline-block;
+	font-size: 2em;
+	width: 30%;
+	height: 30%;
+	margin: 2px;
+	font-style: bold;
+	margin-top: 10%;
+	margin-left: 35%; 
+	color:#F7D9F5  ;
+}
+
+#main .run_header{
+	color: #3C6ECC;
+	font-weight: 20px;
+	font-size: 150%;
+}
+
+.time_to_beat .subpage .time_switch{
+	margin-left: 30%;
+	font-size: 50%;
+	background-color: blue;
 }

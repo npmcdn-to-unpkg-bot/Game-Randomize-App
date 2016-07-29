@@ -20,7 +20,7 @@
 	<![endif]-->
 </head>
 <body>
-	<section class="second_page">
+	<section class="third_page">
 			<!-- Creating a side navigation bar for the user selections so they do not have to keep switching pages. -->
 			<!-- %times; is AN X! --> 
 			<div id="mySidenav" class="sidenav">
@@ -48,7 +48,6 @@
 				</div>
 				<div class="time_to_beat subpage">
 					<header>Time to Beat</header>
-					<button class="time_switch"> Include Games with no Time to Beat</button>   
 					<ul class=" button_column time">
 							<button class="game_button"  id="1 9"> 0:1:00 9:00:00</button> 
 							<button class="game_button"  id="10 19"> 10:0:00 19:00:00  </button> 
@@ -130,25 +129,18 @@
 						</ul>
 				</div>
 
+				<!-- Add all page content inside this div if you want the side nav to push page content to the right (not used if you only want the sidenav to sit on top of the page -->			
+				<!-- <div  class="open_menu" style="cursor:pointer" onclick="openNav()"> ☰</div> -->
+					<div  class="open_menu" style="cursor:pointer" onclick="openNav()"> ☰</div>
 
-
-
-				<!-- Use any element to open the sidenav  ??-->
-				<span  class="open_menu" style="cursor:pointer" onclick="openNav()"> ☰</span>
-				
-				<!-- Add all page content inside this div if you want the side nav to push page content to the right (not used if you only want the sidenav to sit on top of the page -->				
-				<div id="main" onclick="closeSubMenu">
-					<header>How to use</header>				
-				 	<p> "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. </p>
-				 	<p class="Note">*This database of video games is brought to you by the Internet Game Database.  
-				 	Because the information on IGDB is filled in by community members, there are many games without **Ratings,
-				 	and **Time to beat information. It is highly recommended that you choose to include games even if they are missing this information to greatly expand how many games you receive. 
-				 	</p>
-				 	 <span > <a href="third_page.html" title="run screen">NEXT</a> </span>	
-					<span > <a href="../index.html" title="title">BACK</a></span> 
-				</div>
+				<div id="main">
+				<header class="run_header">Execution Page</header>
+					<div ><a class="previous_arrow" href="second_page.html" title="title">BACK</a></div>
+					<button class="run_button">Run Search</button>
+ 				</div>
  	</section>
  		<link href="https://fonts.googleapis.com/css?family=Montserrat|Quicksand" rel="stylesheet">
  		<script type="text/javascript" src="../javascript/button_states.js"></script>
+ 		<script type="text/javascript" src="../javascript/gatherUserSelections.js"></script>
 </body>
 </html>

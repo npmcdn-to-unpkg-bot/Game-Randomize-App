@@ -96,15 +96,14 @@ One Ajax Call to pull all possible games and cache them in the browser using Jav
 */
 
 
-$(document).on('click' , '.execute_button' , function(){
+$(document).on('click' , '.run_button' , function(){
 		console.log('Executing random search'); 
-		//Also start the spinner
 		gatherButtonValues(); 
 		//roatateWheel();
 });
 
 /*
-Function to roatate the wheel as long as the the function to get the random game is still there
+Function to roatate the wheel as long as the there function to get the random game is still there
 */
 //setTimeout(myFunction, 3000)
  $(document).ready(function(){
