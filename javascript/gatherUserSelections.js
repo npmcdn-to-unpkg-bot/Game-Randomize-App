@@ -172,8 +172,72 @@ function sendSelectedData(data){
     	    request.success(function (response){
 	    	  console.log("PRINTING THE RESPONSE IN THE SCUESS FUNCTION!!");
 	    	  //Right now it is print the whole echoed data, not just for the final array.
-	    	 // var formatedResponse = $.parseJSON(response);
-	    	 // console.log(formatedResponse);
+	    	   var formatedResponse = $.parseJSON(response);
+	    	  console.log(formatedResponse);
+	    	  	//Append it to the screen.
+	    	  		//Create divs.
+	    	  		var div1 = $('<div></div>');
+	    	  		div1.addClass('game_title');
+
+	    	  		var div2 = $('<div></div>');
+	    	  		div1.addClass('game_sum');
+
+	    	  		var div3 = $('<div></div>');
+	    	  		div1.addClass('game_genre');
+
+	    	  		var div4 = $('<div></div>');
+	    	  		div1.addClass('game_release');
+
+	    	  		var div5 = $('<div></div>');
+	    	  		div1.addClass('game_rating');
+
+	    	  		var div6 = $('<div></div>');
+	    	  		div1.addClass('game_time');
+
+	    	  		
+
+
+
+	    	  		$('.game_img').css({
+	    	  			'content':'url('+formatedResponse.cover+')'
+	    	  		});
+	    	  		console.log($('#main game_title'));
+	    	  		div1.append(formatedResponse.name);
+	    	  		div2.append( "Summary: "+formatedResponse.summary);
+	    	  		var genreString="Genres: ";
+	    	  		for(var i = 0;i<formatedResponse.genres.length;i++){
+	    	  			genreString+= formatedResponse.genres[i]+"";
+	    	  		}
+	    	  		var releaseString="Release Info: ";
+	    	  		for(var i = 0;i<formatedResponse.release_info.length;i++){
+	    	  			releaseString+= formatedResponse.release_info[i]+"";
+	    	  		}
+
+
+	    	  		div3.append(genreString);
+	    	  		div4.append(releaseString);
+	    	  		div5.append("Rating: " +formatedResponse.rating);
+	    	  		div6.append("Time to beat: " + formatedResponse.time_to_beat);
+
+	    	  		$('.game_title').append(div1);	
+	    	  		//$('.game_info').append(div1);
+	    	  		$('.game_info').append(div2);
+					$('.game_info').append(div3);
+					$('.game_info').append(div4);
+					$('.game_info').append(div5);
+					$('.game_info').append(div6);
+
+
+
+	  //   	  		<div class="game_info">
+			// <div class="game_img">IMG  HERE</div>
+			// 		<div class="game_sum">Summary here</div>
+			// 		<div class="game_genre">Genres here</div>
+			// 		<div class="game_release"> Release info here</div>
+			// 		<div class="game_rating">Rating here</div>
+			// 		<div class="game_time">Time to beat here</div>
+
+
     	    });
 	    	
     	    

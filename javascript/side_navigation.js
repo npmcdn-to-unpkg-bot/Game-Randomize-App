@@ -1,7 +1,7 @@
 /* Set the width of the side navigation to 250px */
 function openNav() {
     document.getElementById("mySidenav").style.width = "250px";
-
+	$('open_menu').hide();
     document.getElementById("main").style.marginLeft = "250px";
 }
 
@@ -20,6 +20,7 @@ function closeNav() {
 			'marginLeft': 0,
 			'width':0
 		});
+		$('open_menu').show();
 
 }
 
@@ -40,15 +41,15 @@ function closeOtherSubMenus(className){
 	});
 }
 
- $(document).ready(function(){
- 	//closeOtherSubMenus("aaa");
- }); 
+  
 
 
 
 /*Function to open the submenus */
 
 $(document).on('click' , '.primary_menu' , function(){
+	//Hide the open menu
+
 		console.log('In subpage click');
 		var classes = $(this).attr('class'); 	
 		var sideNavWidth  = $("#mySidenav").width();
@@ -112,6 +113,8 @@ $(document).on('click' , '.primary_menu' , function(){
 			break;
 		}
 });
+
+
 
 
 
