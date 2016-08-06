@@ -1,16 +1,4 @@
-//Functions to pull data from the IGDB API, its different from the Giant bomb api so there will have
-//to be a lot of formating the data.
-/*
-Data is nicely formatted?
-TIME TO
 
-
-//Whats the problem? 
-//Why is the data all mixed up, is 10000 pulls only give ~6800 games, maybe some ajax calls get snuffed, for example if 2 ajax.
-//calls end at the same time, then the offset might get incremented by 100 and miss some data.
-
-*/
-//Constants for the platform, taken from local storage. 
 var igdbOffset = 0;
 
 igdbPlatformCodes = {};
@@ -47,62 +35,62 @@ var offSetNumber= 0;
 
 
 function ajaxCall(requestData){
-	console.log(requestData.data);
+	console.log("IN THE AJAX CALL WITH THE REQUEST DATA");
+	console.log(requestData.url);
 	$.ajax({
 		url:requestData.url,
 		type:'GET',
-		dataType:requestData.dataType,
-		data:requestData.data,
+		dataType:'jsonp',
+		format:'jsonp',
+        crossDomain:true,
+        json_callback: 'cacheData',
+		data:{
+		 	 offset: igdbOffset,
+       		 json_callback: 'cacheData',
+		 },
 		sucess:function(data){
 			console.log('It worked!' );
 			console.log(data.source);
 			//cacheData(data);
 		},
-		error:function(data){
-			console.log('An Error occured!!');
-			console.log(data);
-		},
-		beforeSend:function(xhr){
-			console.log('trying to set request header');
-			xhr.setRequestHeader("X-Mashape-Authorization", "LRvm3vxiEQmshkEwtQG4T9bvtltop1lz3VZjsnPNh1NDFpFH1K");
-			console.log('set the header');
-		}
+		// error:function(data){
+		// 	console.log('An Error occured!!');
+		// 	console.log(data);
+		// }
 	}).done(function (data) {
 	console.log('AJAX Call is done!');
-	// if(igdbOffset<=20){
-	// 	$.when(
-	 	    cacheData(data)
-	// 	    ).then(function(){
-	// 	    	incrementOffset(),
-	// 	    	ajaxCall(createRequestData())
-	// 	    });
-	// }
   });
 }
 
  $(document).ready(function(){
-//ajaxCall(createRequestData());
- }); //end of document
+ 	console.log("CALLING THE AJAX CALL FOR GIANT BOMB");
+	//ajaxCall(createRequestData());
+ }); 
 
 
 function incrementOffset(){
-	igdbOffset+=10;
+	igdbOffset+=100;
 }
 
 function createRequestData(){
-var requestData = {
-			url:'https://igdbcom-internet-game-database-v1.p.mashape.com/games/?',	
-    		type: "GET",
-    		dataType:'json',
+	console.log("IN CREATE REQUEST DATA");
+	//WHY IN THE FUCKFUCKFUCK FUCK DOES THIS FUNCTION FUCKING WORK IT DOESNT EVEN 
+	var requestData = {
+			url:"http://www.giantbomb.com/api/games/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&field_list=name,platforms,original_release_date,site_detail_url,image,deck,id,expected_release_year,expected_release_month",
+    		type:"GET",
+    		dataType:'jsonp',
     		data:{
-    		fields:'name,id,cover,summary,platforms,genres,release_dates,time_to_beat,rating,genres,aggregated_rating,url',
-    		limit:50,
-    		offset:igdbOffset,
-    		order:'created_at:asc'
+  		    offset: igdbOffset,
+            json_callback: 'cacheData',
+            field_list:'name, platforms, image,deck, original_release_date,id,site_detail_url'
 		}
-	}
-return requestData;
+	};
+	console.log(requestData['url']);
+	return requestData;
 }
+
+
+
 
 
 
@@ -138,156 +126,111 @@ if(rounded >=31){
 return h;
 }
 
-
-
-
-
-
-//name,id,cover,summary,platforms,genres,release_dates,time_to_beat,rating
+//name, platforms, image,deck, original_release_date,id,site_detail_url
 function cacheData(result){
+	gameEntryArray = [];
 	console.log('cacheData function called');
-	$.each(result, function(index,value){
-		var name = value.name;
-		console.log('name is ' +name); 
+	console.log(result.results);
+	//This doesn't work when pulling just one game
+	$.each(result.results, function(index,value){
+		console.log(value);
+	 	var name = value.name;
+		console.log('name is ' +value.name); 
 		var mainId = value.id;
-		console.log('id is ' +mainId);
-		var gameUrl  = value.url;
+		console.log('id is ' +value.id);
+		var gameUrl  = value.site_detail_url;
 		console.log('url is ' + gameUrl );
-		var summary =  value.summary;
-		console.log('summary is ' + summary); 
-		var imageId;
-		if(value.cover!==undefined){
-		 imageId =  value.cover.cloudinary_id;
-		var imageUrl = 'https://res.cloudinary.com/igdb/image/upload/t_cover_big/'+ imageId+'.jpg';
-		console.log('image url is '  + imageUrl);
-	}else{
-		imageId=null;
-	}
-		//This is an array
-		var releaseDates = value.release_dates;
-		allReleaseDates=[];
-		allPlatformsNames=[];
-		$.each(releaseDates, function(index,value){
-			var platKey= value.platform;
-			var platName = igdbPlatformCodes[platKey];
-			var realDate  =dateConverter(value.date);
-			console.log("Name of platform/s is " + platName);
-			console.log("Date of release with this platform is " + realDate) ;
-			//Put into array
-			allReleaseDates.push(realDate);
-			allPlatformsNames.push(platName);
-		});
-
-		for(var i=0;i<allReleaseDates.length;i++){
-			console.log(" Release date is " + allReleaseDates[i] + " on platform:  " + allPlatformsNames[i]);
-		}
-		//SQL needs to had apstromphes double escaped
-			for(var i=0;i<name.length;i++){
-				if(name[i]==='\''){
-					name = insertAt(name, i , '\'');
-					console.log('Found apostrophe at index ' + i );
-					i++;
-				}
-			}
-
-			console.log('New name is ' + name);
-			if(summary!==undefined){
-				for(var i=0;i<summary.length;i++){
-					if(summary[i]==='\''){
-						console.log('Found apostrophe at index DECK' + i );
-						summary  = insertAt(summary, i , '\'');
-						i++;
-					}
-				}
-		}
-			//console.log('New Summary is '  + summary); 
-			//This is also unix nano seoncds
-			// var timeToBeatUnixNormal = ;
-			// var timeToBeatUnixHaste = ;
-			// var timeToBeatUnixCompletely = ;
-		 function timeData(){
-			console.log('STARTIN TIME TO BEAT FUNCTION');
-				if(value.time_to_beat.normally!==undefined){
-				   console.log("Time to beat normally is " + value.time_to_beat.normally );
-					var normalTime = timeConverter(value.time_to_beat.normally);
-					//console.log("Time to beat normally is " + normalTime );
-					return normalTime;
-				}else if(value.time_to_beat.hastly!==undefined){
-					   console.log("Time to beat hastly is " + value.time_to_beat.hastly );
-					var hasteTime = timeConverter(value.time_to_beat.hastly);
-					//console.log("Time to beat normally is " + hasteTime );
-					return hasteTime;
-					}else if(value.time_to_beat.completely!==undefined){
-						   console.log("Time to beat completely is " + value.time_to_beat.completely );
-						var completeTime = timeConverter(value.time_to_beat.completely);
-					//	console.log("Time to beat normally is " + completeTime );
-						return completeTime;
-				}else{
-					return undefined;
-				}
-		}
-
-		if(value.time_to_beat!==undefined){ 
-			var timeToBeat = timeData();
+	 	var summary =  value.deck;
+	 	console.log('summary is ' + summary); 
+	 	var imageUrl;
+	 	if(value.image!==undefined && value.image!==null){
+	 		console.log("Inside the value image!");
+	 	imageUrl =  value.image['medium_url']; 
+	 	console.log('image url is '  + imageUrl);
 		}else{
-			timeToBeat= undefined;	
+	 		imageUrl=null;
 		}
-		var rating;
-		if(value.aggregated_rating !== undefined){
-			rating = value.aggregated_rating;
-		}else if(value.rating){
-			rating = value.rating;
-		}else{
-			rating = undefined;
-		}
-		console.log("rating is " + rating);
-		//Can be an array you know
-
-			var genres =[];
-			if(value.genres !== undefined){
-		 		for(var i = 0;i<value.genres.length;i++){
-					 var id = value.genres[i];
-					 genres.push(igbdGenreCodes[id]);
-					console.log('Genre is at index '  + i + ' is ' +  genres[i]);
-				}
-		}else{
-			genres = null;
-		}
-		var gameEntry = {
-			name:name,
-			id:mainId,
-			genre:genres,
-			cover:imageUrl,
-			summary:summary,
-			platform:allPlatformsNames,
-			releaseDate: allReleaseDates,
-			howLong:timeToBeat,
-			rating:rating,
-			url:gameUrl
-		};
-
-		for(var key in gameEntry) {
-    		console.log(key + " is: " + gameEntry[key]);
-    		if(gameEntry[key]===undefined){
-    			gameEntry[key]=null;
-    			console.log(gameEntry[key]);
-    		}
-		}
-		allGamesEntry.push(gameEntry);
-		console.log(gameEntry);
+		 	console.log("Image id is " + imageUrl);
+	 	//This is one value, just the original release 
+	 	//okay some games have not been released yet.
+	 	//If releaseDate is null then put expected release year, and then check for month
+	 	console.log("Expected release year " + value.expected_release_year);
+	 	console.log("Expected released month " + value.expected_release_month);
+	 	var releaseData="";
+	 	if(value.original_release_date!==null){
+	 	 releaseData = value.original_release_date;
+	 	 releaseData = releaseData.substr(0,releaseData.indexOf(" "));
+	 	}else if(value.expected_release_year!==null){
+	 		//got the year 
+	 		console.log("INSIDE EXPECTED YEAR");
+	 		 releaseData =value.expected_release_year;
+	 		//Check for the month
+	 		if(value.expected_release_month!==null){
+	 			console.log("Month is how long: "  + value.expected_release_month.toString().length);
+	 			var monthLength = value.expected_release_month.toString().length;
+	 			if(monthLength==1){
+	 			releaseData+="-0"+value.expected_release_month;
+	 		    }else{
+	 			releaseData+="-"+value.expected_release_month;
+	 			}
+	 		}
+	 	}else{
+	 		var releaseData = null;
+	 	}
+	 	//Split along space 
+	 	console.log("Original release data is " + releaseData);
+	 	allPlatformsNames=[];
+	 	$.each(value.platforms, function(index,value){
+	 		 var platName = value.name
+	 		 console.log(platName);
+	 		allPlatformsNames.push(platName);
+	 	});
+	// 	//SQL needs to had apstromphes double escaped
+	 		for(var i=0;i<name.length;i++){
+	 			if(name[i]==='\''){
+	 				name = insertAt(name, i , '\'');
+	 				console.log('Found apostrophe at index ' + i );
+	 				i++;
+	 			}
+	 		}
+		console.log('New name is ' + name);
+	 		if(summary!==undefined && summary!=null){
+	 			for(var i=0;i<summary.length;i++){
+	 				if(summary[i]==='\''){
+	 					console.log('Found apostrophe at index DECK' + i );
+	 					summary  = insertAt(summary, i , '\'');
+	 					i++;
+	 				}
+	 			}
+	 	}
+	 	console.log('New Summary is '  + summary); 		
+	 	var gameEntry = {
+	 		name:name,
+	 		id:mainId,
+	 		genre_id:mainId,
+	 		platform_id:mainId,
+	 		cover:imageUrl,
+	 		summary:summary,
+	 		platform:allPlatformsNames,
+	 		releaseDate: releaseData,
+	 		url:gameUrl
+	 	};
 		insertGamesintoDataBase(gameEntry);
-			//}
 	});
+	if(igdbOffset<=57000){
+		incrementOffset();
+		console.log("Offset is now " + igdbOffset);
+		ajaxCall(createRequestData());
+	}
 }
 
 
 function insertGamesintoDataBase(data){
-		var request =  $.ajax({
+ 	var request = 	$.ajax({
  			url: 'http://localhost/gameApp/php/insertgames.php',
     	    type: "post",
-    	    data
-			 });
-    	// Callback handler that will be called on success
+    	    data});
+	//Callback handler that will be called on success
     	request.done(function (response, textStatus, jqXHR){
     	    // Log a message to the console
     	    console.log("Hooray, it worked!");
@@ -300,4 +243,4 @@ function insertGamesintoDataBase(data){
 	    	        "The following error occurred: "+
 	    	        (textStatus, errorThrown));
     	    });
-}
+	}

@@ -2,7 +2,7 @@
 var array; 
 
  $(document).ready(function(){
- 	generateImages();
+ 	  generateImages();
  }); 
 
 
@@ -22,13 +22,13 @@ function generateImages(){
    	request.done(function (response, textStatus, jqXHR){
    	    // Log a message to the console
    	    console.log("Hooray, it worked!");
-   	    console.log(response);
+   	   // console.log(response);
    	});
 
    	request.success(function(response){
    		console.log("POST call for splash screen successful");
    		 var data = jQuery.parseJSON(response);
-   		 console.log(data);
+   		// console.log(data);
    		 //GOT IT
    		 console.log("Returned data!!!");
    		 appendImages(data);
@@ -48,12 +48,12 @@ function generateImages(){
 function appendImages(links){
 //Add 10 images to each row.
 	$.each(links, function(index,value){
-		console.log('In the each function');
+		//console.log('In the each function');
 		var div = $('<div><img src='+ value +' /></div>');
 		//var img = $('<img src=' + value+'></img>');
 		div.addClass('grid-item');
 		//div.append(img);
-		console.log(div);
+		//console.log(div);
 		$(".first_page .grid").append(div);
 	});	
 //Set up the masonry and the image loaded script
