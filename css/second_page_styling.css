@@ -195,8 +195,6 @@ background-color: #82BC29  ;
 	margin: 0px;
 	position: absolute;
 	top: -2%;
-
-
 }
 #main .next{
 	width: 5%;
@@ -240,7 +238,7 @@ background-color: #82BC29  ;
     color: blue;
 }
 
-.third_page .run_button{
+#main .run_button{
 	display: inline-block;
 	font-size: 2em;
 	width: 30%;
@@ -253,7 +251,7 @@ background-color: #82BC29  ;
 }
 
 #main .run_header{
-	color: #3C6ECC;
+	color:#EEADF0  ;
 	font-weight: 20px;
 	font-size: 150%;
 }
@@ -280,3 +278,4 @@ background-color: #82BC29  ;
 .game_title{
 	color: #8B1621  ;
 }
+

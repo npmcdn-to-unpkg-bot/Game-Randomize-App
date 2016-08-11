@@ -1,25 +1,25 @@
 
-var igdbOffset = 0;
+// var igdbOffset = 0;
 
-igdbPlatformCodes = {};
-igbdGenreCodes= {};
-	for (var i = 0; i < localStorage.length; i++){
-		if(localStorage.key(i).includes("plat")){
-			var unCodedId = localStorage.key(i);
-			var realId = (unCodedId.substr(unCodedId.indexOf(" "), unCodedId.length)).trim();
-			 igdbPlatformCodes[realId] =(localStorage.getItem(localStorage.key(i))); 
-			 //console.log("Console name is "  +localStorage.getItem(localStorage.key(i)) + " id: " + realId); 
-		}else if(localStorage.key(i).includes("genre")){
-			var unCodedId = localStorage.key(i);
-		  	var realId = (unCodedId.substr(unCodedId.indexOf(" "), unCodedId.length)).trim();
-			igbdGenreCodes[realId] =localStorage.getItem(localStorage.key(i)); 
-			//console.log("Genre name is "  +localStorage.getItem(localStorage.key(i)) + " id: " + realId );
-		}
-}
+// igdbPlatformCodes = {};
+// igbdGenreCodes= {};
+// 	for (var i = 0; i < localStorage.length; i++){
+// 		if(localStorage.key(i).includes("plat")){
+// 			var unCodedId = localStorage.key(i);
+// 			var realId = (unCodedId.substr(unCodedId.indexOf(" "), unCodedId.length)).trim();
+// 			 igdbPlatformCodes[realId] =(localStorage.getItem(localStorage.key(i))); 
+// 			 //console.log("Console name is "  +localStorage.getItem(localStorage.key(i)) + " id: " + realId); 
+// 		}else if(localStorage.key(i).includes("genre")){
+// 			var unCodedId = localStorage.key(i);
+// 		  	var realId = (unCodedId.substr(unCodedId.indexOf(" "), unCodedId.length)).trim();
+// 			igbdGenreCodes[realId] =localStorage.getItem(localStorage.key(i)); 
+// 			//console.log("Genre name is "  +localStorage.getItem(localStorage.key(i)) + " id: " + realId );
+// 		}
+// }
 
 	
-//console.log(igdbPlatformCodes);
-console.log(igbdGenreCodes);
+// //console.log(igdbPlatformCodes);
+// console.log(igbdGenreCodes);
 	
 
 

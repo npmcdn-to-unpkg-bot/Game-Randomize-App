@@ -169,76 +169,110 @@ function sendSelectedData(data){
 	    	        "The following error occurred: "+
 	    	        (textStatus, errorThrown));
     	    });
-    	    request.success(function (response){
-	    	  console.log("PRINTING THE RESPONSE IN THE SCUESS FUNCTION!!");
-	    	  //Right now it is print the whole echoed data, not just for the final array.
-	    	   var formatedResponse = $.parseJSON(response);
-	    	  console.log(formatedResponse);
-	    	  	//Append it to the screen.
-	    	  		//Create divs.
-	    	  		var div1 = $('<div></div>');
-	    	  		div1.addClass('game_title');
-
-	    	  		var div2 = $('<div></div>');
-	    	  		div1.addClass('game_sum');
-
-	    	  		var div3 = $('<div></div>');
-	    	  		div1.addClass('game_genre');
-
-	    	  		var div4 = $('<div></div>');
-	    	  		div1.addClass('game_release');
-
-	    	  		var div5 = $('<div></div>');
-	    	  		div1.addClass('game_rating');
-
-	    	  		var div6 = $('<div></div>');
-	    	  		div1.addClass('game_time');
-
-	    	  		
+    	//     request.success(function (response){
+	    // 	  console.log("PRINTING THE RESPONSE IN THE SCUESS FUNCTION!!");
+	    // 	  //Right now it is print the whole echoed data, not just for the final array.
+	    // 	   var formatedResponse = $.parseJSON(response);
+	    // 	  console.log(formatedResponse);
+	    // 	  	//Append it to the screen.
+	    // 	  		//Create divs.
+	    // 	  		//Clear the divs
+	    // 	  		$(".game_info").empty();
 
 
+	    // 	  		var div_title = $('<div></div>');
+	    // 	  		div_title.addClass('game_title');
 
-	    	  		$('.game_img').css({
-	    	  			'content':'url('+formatedResponse.cover+')'
-	    	  		});
-	    	  		console.log($('#main game_title'));
-	    	  		div1.append(formatedResponse.name);
-	    	  		div2.append( "Summary: "+formatedResponse.summary);
-	    	  		var genreString="Genres: ";
-	    	  		for(var i = 0;i<formatedResponse.genres.length;i++){
-	    	  			genreString+= formatedResponse.genres[i]+"";
-	    	  		}
-	    	  		var releaseString="Release Info: ";
-	    	  		for(var i = 0;i<formatedResponse.release_info.length;i++){
-	    	  			releaseString+= formatedResponse.release_info[i]+"";
-	    	  		}
+	    // 	  		var div_sum = $('<div></div>');
+	    // 	  		div_sum.addClass('game_sum');
 
+	    // 	  		var div_genre = $('<div></div>');
+	    // 	  		div_genre.addClass('game_genre');
 
-	    	  		div3.append(genreString);
-	    	  		div4.append(releaseString);
-	    	  		div5.append("Rating: " +formatedResponse.rating);
-	    	  		div6.append("Time to beat: " + formatedResponse.time_to_beat);
+	    // 	  		var div_platform = $('<div></div>');
+	    // 	  		div_platform.addClass('game_platform');
 
-	    	  		$('.game_title').append(div1);	
-	    	  		//$('.game_info').append(div1);
-	    	  		$('.game_info').append(div2);
-					$('.game_info').append(div3);
-					$('.game_info').append(div4);
-					$('.game_info').append(div5);
-					$('.game_info').append(div6);
+	    // 	  		var div_year = $('<div></div>');
+	    // 	  	    div_year.addClass('game_year');
+
+	    // 	  		var div_rating = $('<div></div>');
+	    // 	  		div_rating.addClass('game_rating');
+
+	    // 	  		var div_time = $('<div></div>');
+	    // 	  		div_time.addClass('game_time');
 
 
+	    // 	  		var escapedCover = formatedResponse.cover;
+	    // 	  		var regularUrl = escapedCover.replace('\/','/');
+	    // 	  		//var realUrl = regularUrl.slice(0, (regularUrl.length)-1)
+	    // 	  		console.log("REG URL " + regularUrl);
+	    // 	  		var div_img = $('<img src='+regularUrl+" />");
 
-	  //   	  		<div class="game_info">
-			// <div class="game_img">IMG  HERE</div>
-			// 		<div class="game_sum">Summary here</div>
-			// 		<div class="game_genre">Genres here</div>
-			// 		<div class="game_release"> Release info here</div>
-			// 		<div class="game_rating">Rating here</div>
-			// 		<div class="game_time">Time to beat here</div>
+	    // 	  		// $('.game_img').css({
+	    // 	  		// 	'content':'url('+formatedResponse.cover+')'
+	    // 	  		// });
+	    // 	  		console.log($('.game_img'));
+	    // 	  		console.log($('#main game_title'));
+	    // 	  		div_title.append(formatedResponse.name);
+	    // 	  		div_sum.append( "Summary: "+formatedResponse.summary);
+	    // 	  		var genreString="Genres: ";
+	    // 	  		if(formatedResponse.genres!=undefined){
+	    // 	  			for(var i = 0;i<formatedResponse.genres.length;i++){
+	    // 	  				if(i==formatedResponse.genres.length){
+	    // 	  					genreString+= formatedResponse.genres[i];
+
+	    // 	  				}else{
+	    // 	  					genreString+= formatedResponse.genres[i]+" , ";
+	    // 	  			    }
+	    // 	  			}
+	    // 	  	    }
+	    // 	  		var platformString="Platforms: ";
+	    // 	  		if(formatedResponse.platforms!=undefined){
+	    // 	  			for(var i = 0;i<formatedResponse.platforms.length;i++){
+	    // 	  				if(i==formatedResponse.platforms.length){
+	    // 	  				platformString+= formatedResponse.platforms[i];
+	    // 	  				}else{
+	    // 	  				platformString+= formatedResponse.platforms[i]+" , ";
+	    // 	  				}
+	    // 	  			}
+	    // 	    	}
+	    // 	    	var timeString="";
+	    // 	  		if(formatedResponse.time_to_beat!=undefined){
+	    // 	  			for(var i = 0;i<formatedResponse.time_to_beat.length;i++){
+	    // 	  				switch(i){
+	    // 	  					case 1:
+	    // 	  						 timeString+=" Main Story: "+formatedResponse.time_to_beat[i];
+	    // 	  					break;
+	    // 	  					case 2:
+	    // 	  						 timeString+=" Main Story+ Extras: "+formatedResponse.time_to_beat[i];
+	    // 	  					break;
+	    // 	  					case 3:
+	    // 	  						 timeString+=" Completionist: "+formatedResponse.time_to_beat[i];
+	    // 	  					break;
+	    // 	  					case 4:
+	    // 	  						 timeString+=" Combined Time: "+formatedResponse.time_to_beat[i];
+	    // 	  					break;
+	    // 	  				}
+	    // 	  			}
+	    // 	    	}
 
 
-    	    });
-	    	
-    	    
+
+	    // 	  		div_sum.append(genreString);
+	    // 	  		div_platform.append(platformString);
+	    // 	  		div_year.append(formatedResponse.releaseDate);
+	    // 	  		div_rating.append("Rating: " +formatedResponse.rating);
+	    // 	  		div_time.append(timeString);
+	    // 	  		$('.game_info').append(div_title);	
+	    // 	  		$('.game_info').append(div_img);
+	    // 	  		$('.game_info').append(div_sum);
+					// $('.game_info').append(div_genre);
+					// $('.game_info').append(div_year);
+					// $('.game_info').append(div_time);
+					// $('.game_info').append(div_platform);
+					// $('.game_info').append(div_rating);
+
+
+    	//     });
+	    	    	    
 }

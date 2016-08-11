@@ -48,16 +48,16 @@
 				<div class="time_to_beat subpage">
 					<header>Time to Beat</header>
 					<ul class=" button_column time">
-							<button class="game_button"  id="1 9"> 0:1:00 9:00:00</button> 
-							<button class="game_button"  id="10 19"> 10:0:00 19:00:00  </button> 
-							<button class="game_button"  id="20 29">  20:0:00 29:00:00  </button> 
-							<button class="game_button"  id="30 39"> 30:0:00 39:00:00 </button> 
-							<button class="game_button"  id="40 49">40:0:00 49:00:00  </button>
-							<button class="game_button"  id="50 59">  50:0:00 59:00:00 </button> 
-							<button class="game_button"  id="60 69">  60:0:00 69:00:00  </button> 
-							<button class="game_button"  id="70 79">  70:0:00 79:00:00 </button> 
-							<button class="game_button"  id="80 89">  80:0:00 89:00:00  </button> 
-							<button class="game_button"  id="90 1000">90 100</button> 
+							<button class="game_button"  id="1 9"> 1:00:00 9:00:00</button> 
+							<button class="game_button"  id="10 19"> 10:00:00 19:00:00  </button> 
+							<button class="game_button"  id="20 29">  20:00:00 29:00:00  </button> 
+							<button class="game_button"  id="30 39"> 30:00:00 39:00:00 </button> 
+							<button class="game_button"  id="40 49">40:00:00 49:00:00  </button>
+							<button class="game_button"  id="50 59">  50:00:00 59:00:00 </button> 
+							<button class="game_button"  id="60 69">  60:00:00 69:00:00  </button> 
+							<button class="game_button"  id="70 79">  70:00:00 79:00:00 </button> 
+							<button class="game_button"  id="80 89">  80:00:00 89:00:00  </button> 
+							<button class="game_button"  id="90 1000">90:00:00 - 90+</button> 
 					</ul>
 				</div>
 				<div class="rating subpage">
@@ -127,26 +127,25 @@
 							<button class="game_button"  id="2016_unreleased"> Unreleased games </button> 
 						</ul>
 				</div>
-
 				<!-- Add all page content inside this div if you want the side nav to push page content to the right (not used if you only want the sidenav to sit on top of the page -->			
 				<!-- <div  class="open_menu" style="cursor:pointer" onclick="openNav()"> ☰</div> -->
-					<div  class="open_menu" style="cursor:pointer" onclick="openNav()"> ☰</div>
+				<div id="main" onclick="closeSubMenu">
+					<div class="open_menu" style="cursor:pointer" onclick="openNav()">☰</div>
+					<header class="run_header">Run Page</header>				
+				 	 <div > <a class="next" href="third_page.html" title="run screen"> -> </a> </div>	
+					<div > <a class="previous" href="../index.html" title="title">  <- </a></div> 
+<!-- 					<div class="game_img"></div>
+ -->					<div class="game_info">
+<!-- 						 <div class="game_title"> </div> 
+ -->						
+					</div>
+					<button class="run_button"> Run</button>
+				</div>
+				
 
-				<div id="main">
-				<header class="run_header">Execution Page</header>
-					<div ><a class="previous_arrow" href="second_page.html" title="title">BACK</a></div>
-					<header class="game_title"> </header>
-					
-			<div class="game_info">
-			<div class="game_img">IMG  HERE</div>
-					<!-- <div class="game_sum"> </div>
-					<div class="game_genre">Genres here</div>
-					<div class="game_release"> Release info here</div>
-					<div class="game_rating">Rating here</div>
-					<div class="game_time">Time to beat here</div> -->
- 				</div>
- 				<button class="run_button">Run Search</button>
- 			</div>
+
+
+
  		<link href="https://fonts.googleapis.com/css?family=Montserrat|Quicksand" rel="stylesheet">
  		<script type="text/javascript" src="../javascript/button_states.js"></script>
  		<script type="text/javascript" src="../javascript/gatherUserSelections.js"></script>

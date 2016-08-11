@@ -17,23 +17,34 @@ var genreArray = {};
 
 function cachePlatformData(result){
 	console.log('in cache platform data');
-	$.each(result, function(index,value) {
+	//counter=0;
+	//Because keys cannot be the same
+	$.each(result.results, function(index,value){
 			var mainName = value.name;
-			var mainId = value.id;
-			localStorage.setItem( ('plat ' + mainId), mainName);
+			//var mainId = value.id;
+			localStorage.setItem( "plat"+platformOffset , mainName);
 			platformOffset++;
-			console.log('Pushed '  + mainName + " with id: "  + mainId + " to localStorage Platform");
+			console.log('Pushed '  + mainName + " to localStorage Platform with key " + platformOffset+" plat");
+			console.log("Platform offset at num " + platformOffset);
+			console.log(localStorage.length);
+			//counter++;
 		});
 	console.log('done WITH cachePlatformData() function');
+	if( platformOffset%100 == 0 || platformOffset==0 ){
+        	  console.log('More data exists, starting another pull');
+        	  platformPullData();
+       	}else{
+       		generatePlatformButtonsfromCache(5);
+        }
 }
 function cacheGenreData(result){
 	console.log('in cache genre data');
-	$.each(result, function(index,value) {
+	$.each(result.results, function(index,value) {
 			var mainName = value.name;
-			var mainId = value.id;	
-			localStorage.setItem(('genre '+ mainId), mainName);
+			//var mainId = value.id;	
+			localStorage.setItem(('genre '+ genreOffSetCounters), mainName);
 			genreOffSetCounters++;
-			console.log('Pushed '  + mainName + " with id: "  + mainId + " to localStorage Genre");
+			console.log('Pushed '  + mainName + " with id: "  + genreOffSetCounters + " to localStorage Genre");
 		});
 	console.log('done WITH cacheGenreData() function');
 }
@@ -50,12 +61,12 @@ function resortPlatforms(){
 						//Strip out the plat from the key
 						var defaultLocalKey = localStorage.key(i);
 						console.log("Default key is... " + defaultLocalKey);
-						var newKey  = (defaultLocalKey.substr(defaultLocalKey.indexOf(" "), defaultLocalKey.length)).trim();
+						//var newKey  = (defaultLocalKey.substr(defaultLocalKey.indexOf(" "), defaultLocalKey.length)).trim();
 						//Left blank
 						//var newKey = "";
-						console.log("New key is " + newKey );
+						//console.log("New key is " + newKey );
 						console.log("Item at index i= "  +  i + " is " + localStorage.getItem(localStorage.key(i)));
-					   localStorageArray[i] = newKey + " " + localStorage.getItem(localStorage.key(i));
+					   localStorageArray[i] = defaultLocalKey + " " + localStorage.getItem(localStorage.key(i));
 					}
 				}
 			  
@@ -66,10 +77,12 @@ function resortPlatforms(){
 		 for(var i = 0 ; i<sortedArray.length;i++){
 		 		if(sortedArray[i]!==undefined){
 		 			console.log("i ====== ?  "  + sortedArray[i] );
-					var noNumbersPart = sortedArray[i].substr(2,sortedArray[i].length);
-		 			var numbersPart = sortedArray[i].substr(0,2);
-					var convertedNumbersPart = numbersPart.replace(/[^a-z+]+/gi, '');
-					sortedArray[i] =  noNumbersPart + convertedNumbersPart;
+					//var noNumbersPart = sortedArray[i].substr(2,sortedArray[i].length);
+		 			//var numbersPart = sortedArray[i].substr(0,2);
+					//var convertedNumbersPart = numbersPart.replace(/[^a-z+]+/gi, '');
+				 	var realName = sortedArray[i].substr(sortedArray[i].indexOf(' ')+1); 
+				 	console.log(realName);
+					sortedArray[i] = realName;
 				}
 		}	 
 		console.log(sortedArray);
@@ -105,32 +118,26 @@ to ensure there is only on long load time.
 function generatePlatformButtonsfromCache(numberOfDeafaultButtons){
 	console.log("In generate platform buttons"); 
 	var platButtonsAdded=0;
-	var array = resortPlatforms(); 
-	for (var i = 0; i < array.length; i++){
-		//if(localStorage.key(i).includes("plat")){
-
-			//var unCodedId = localStorage.key(i);
-			//var realId = (unCodedId.substr(unCodedId.indexOf(" "), unCodedId.length)).trim();
-		//	var mainName =  localStorage.getItem(unCodedId);
-		//	var mainId =  localStorage.getItem(unCodedId);
-			var mainName =  array[i];
-			var mainId =  array[i];
-			console.log("Main name is: " + mainName + " and Main id is: " + mainId + " at offset i = " + i );
-			var button =  $('<button></button>');
-			 button.addClass('game_button');
-			 button.attr('id', mainId);
-			 button.text(mainName);
-			 column = $('.button_column.platform');
-			 column.append(button); 
-			 platButtonsAdded++;
-			 console.log('Platform buttons added at ' + platButtonsAdded);
-			 if(platButtonsAdded  >=numberOfDeafaultButtons){
-				console.log('Hidling buttons in platform');
-				button.hide();
-			 }
-
-		//}
-	}
+	var array = resortPlatforms();
+	if(array.length > 0){
+				for(var i =0 ; i<array.length;i++){
+						console.log("At i= " + i +"....");
+						var mainName =  array[i]
+						console.log("Main name is: " + mainName);
+						var button =  $('<button></button>');
+			 			button.addClass('game_button');
+			 			button.attr('id', mainName);
+			 			button.text(mainName);
+			 			column = $('.button_column.platform');
+			 			column.append(button); 
+			 			platButtonsAdded++;
+			 			console.log('Platform buttons added at ' + platButtonsAdded);
+			 			if(platButtonsAdded  >=numberOfDeafaultButtons){
+							console.log('Hidling buttons in platform');
+							button.hide();
+			 			}
+				}	  
+		}
 }
 
 function generateGenreButtonsFromCache(numberOfDeafaultButtons){
@@ -159,27 +166,22 @@ function generateGenreButtonsFromCache(numberOfDeafaultButtons){
 
 
 function platformPullData(){
-	var platformUrl ='https://igdbcom-internet-game-database-v1.p.mashape.com/platforms/?';
+	var platformUrl ='http://www.giantbomb.com/api/platforms/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&field_list=name&sort=release_date:desc';
 		$.ajax({
  		url: platformUrl,
         type: "GET",
-        dataType:'json',
+        dataType:'jsonp',
+        format:'jsonp',
         data:{
-        		 fields:'name,id',
+        	     json_callback:'cachePlatformData',
+        		 fields:'name',
         		 offset: platformOffset,
-        		 limit:50,
-        		 order:'created_at:desc'
         	},
         complete: function(){	
         	console.log('Done with the AJAX Call');
         	//Here you will keep generating till the offset is over
-        	  console.log('Platform offset is currently at ' + platformOffset);
-        	if( platformOffset%50 == 0 || platformOffset==0 ){
-        	  console.log('More data exists, starting another pull');
-        	  platformPullData();
-        	}else{
-        		generatePlatformButtonsfromCache(5);
-        	}
+        	
+        	
         },	
         success: function(data){
         	console.log('called success: in AJAX call') ;
@@ -196,7 +198,7 @@ function platformPullData(){
         	}
         }
  		}).done(function(data){
- 			cachePlatformData(data);
+ 			//cachePlatformData(data);
  			//Also call the genre from here to
  		});
 }
@@ -204,22 +206,22 @@ function platformPullData(){
 
 function genrePullData(){
 		console.log('In genrePullData');
-	    var genreUrl = 'https://igdbcom-internet-game-database-v1.p.mashape.com/genres/?';
+	    var genreUrl = 'http://www.giantbomb.com/api/genres/?api_key=f04a7c4e6c0dc84173ec15ce40ca61d964d4b5b0&format=jsonp&field_list=name';
 		$.ajax({
  		url: genreUrl,
         type: "GET",
-        dataType:'json',
+        dataType:'jsonp',
+        format:'jsonp',
         data:{
-        		 fields:'name,id',
-        		 offset: genreOffSetCounters,
-        		 limit:50,
-        		 order:'created_at:asc'
+        	json_callback:'cacheGenreData',
+        	fields:'name',
+       		offset: genreOffSetCounters,
         	},
         complete: function(){	
         	console.log('Complete() with the AJAX Call');
         	//Here you will keep generating till the offset is over
         	  console.log('Genre offset is currently at ' + genreOffSetCounters);
-        	if( genreOffSetCounters%50 == 0 || genreOffSetCounters==0 ){
+        	if( genreOffSetCounters%100 == 0 || genreOffSetCounters==0 ){
         	  console.log('More data exists, starting another pull');
         	  genrePullData();
         	}else{

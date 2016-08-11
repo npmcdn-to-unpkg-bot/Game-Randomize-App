@@ -7,17 +7,14 @@ function genreAjaxCall(){
 		url:'http://localhost/gameApp/php/all_id_pull.php',
 		type: "post",
 		sucess:function(data){
-		 console.log("POST call for splash screen successful");
-   		 
-   		
+
 		},
 		 error:function(data){
 		 	console.log('An Error occured!!');
-		 	console.log(data);
-		 	
+		 	console.log(data);	
 		 }
 	}).done(function (data) {
-		var parsed_data = jQuery.parseJSON(data);
+	  var parsed_data = jQuery.parseJSON(data);
 	  console.log('AJAX Call is done!');
 	  console.log(parsed_data);
    	  console.log("Returned data!!!");
@@ -62,12 +59,11 @@ function cacheGenre(data){
 		var name = value.name;
 	 			for(var i=0;i<name.length;i++){
 	 				if(name[i]==='\''){
-	 					console.log('Found apostrophe at index DECK' + i );
+	 					console.log('Found apostrophe at index genre Name' + i );
 	 					name  = insertAt(name, i , '\'');
 	 					i++;
 	 				}
 	 			}
-	 	
 		genreNames.push(name);
 		var id = id_array[0];
 		console.log("Name: " + name + " id: " + id);
@@ -76,10 +72,19 @@ function cacheGenre(data){
 	genre_object['id']=id_array[0];
 	//Pop off one id and call again 
 	if(id_array.length>1){
+		// id_array.splice(0, 1);
+		// console.log(id_array);
+		// insertData(genre_object);
+		// getGenreData(createRequestData2());
+		setTimeout(function() { 
+		console.log("Inside the setTimeout function ");
 		id_array.splice(0, 1);
-		console.log(id_array);
-		insertData(genre_object);
-		getGenreData(createRequestData2());
+		 console.log(id_array);
+		 insertData(genre_object);
+		 getGenreData(createRequestData2());
+
+		}, 2000);
+
 
 
 	}else{
@@ -91,7 +96,7 @@ function cacheGenre(data){
 
  $(document).ready(function(){
  	console.log("CALLING GENRE PULL!")
- 	//genreAjaxCall();
+ 	genreAjaxCall();
  }); 
 
 function insertData(data){
@@ -116,17 +121,6 @@ function insertData(data){
 	    	        (textStatus, errorThrown));
     	    });
 }
-
-
-
-
-
-
-//////////////////////////////////////////////////////////////////////////////////
-
-
-
-
 
 function createRequestData2(){
 var requestData = {

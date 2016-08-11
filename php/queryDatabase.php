@@ -5,7 +5,7 @@
   $servername = "localhost";
   $username = "root";
   $password = "DIAMONDjozu17";
-  $dbname  = "igdb";
+  $dbname  = "giant_bomb";
 
 //IF PLATFORM AND YEAR DON'T EXIST,THEN NOTHING ELSE DOES.Inidate that with a boolean
 $platform_year_found;                  
@@ -63,6 +63,12 @@ if(!(empty($_POST['yearArray']))){
     //echo $ratings[0];
    }
 
+   if(!(empty($_POST['yearArray']))){
+    $years = $_POST['yearArray'];
+    //echo $ratings[0];
+   }
+
+
 
 
 
@@ -86,7 +92,7 @@ if($includeEmptyScores && !empty($scores)){
 //Query to search the release info table to get the platforms. 
 
 $releaseInfoQuery = []; 
-
+$platformQuery=[];
 /*
 There are 4 possiblities
 1.  platforms and years choosen 
@@ -99,13 +105,13 @@ There are 4 possiblities
 if(!empty($platforms) && empty($years)){
       $lengthPlatforms = count($platforms);
       for ($i = 0; $i < $lengthPlatforms; $i++) {
-           $releaseInfoQuery[$i] .= "SELECT release_id,platform_name, release_date FROM release_info WHERE( " .
+           $releaseInfoQuery[$i] .= "SELECT platform_id,platform_name FROM platforms WHERE( " .
          "platform_name = ". "'". $platforms[$i]."'" ;
          //Append the ending.
          // if(empty($years)){
             $releaseInfoQuery[$i] .= ");";
           //}
-         // echo $releaseInfoQuery[$i] . "\n";
+          echo $releaseInfoQuery[$i] . "\n";
     }
 } else if(!empty($platforms) && !empty($years)){
       $lengthPlatforms = count($platforms);
@@ -421,7 +427,7 @@ if(!empty($scores) && empty($listOfSelectedIds)){
 if(empty($platforms) && empty($genres) && empty($scores) && empty($times) && empty($ratings) && empty($years)){
 //Pick a random row from the entire table
   // echo " No preferences choosen, selecting game at random. \n";
-$randomRowGames = "SELECT * FROM games2 ORDER BY RAND() LIMIT 1";
+$randomRowGames = "SELECT * FROM giant_bomb_games ORDER BY RAND() LIMIT 1";
 $result = $conn->query($randomRowGames);
 $chosenID; 
 $gameArray;
@@ -437,10 +443,10 @@ $contentArray =[];
                          'name'=> $row['name'],
                          'id'=>$row['id'],
                          'cover'=> $row['cover'],
+                         'releaseDate'=>$row['release_data'],
                          'summary'=>$row['summary'],
-                         'time_to_beat'=> $row['time_to_beat'],
                          'rating'=>$row['rating'],
-                         'info'=> $row['url']
+                         'info'=> $row['url'],
                          ];
               }
           // echo "Choosen Id  is " . $chosenID . "\n";
@@ -450,17 +456,18 @@ $contentArray =[];
   }else{
            // echo "Sorry no results found for this query! \n";
     }
-
     if(!empty($chosenID)){
          //Find the release info and the genre stuff
         $randomGenreQuery= "SELECT * FROM genres WHERE genre_id=".$chosenID ;
-        $randomReleaseData= "SELECT * FROM release_info WHERE release_id =".$chosenID;
+        $randomReleaseData= "SELECT * FROM platforms WHERE platform_id =".$chosenID;
+        $randomTimeToBeatQuery="SELECT * FROM time_to_beat_table WHERE id =".$chosenID;
         $result2 = $conn->query($randomGenreQuery);
         $result3 = $conn->query($randomReleaseData);
+        $result4= $conn->query($randomTimeToBeatQuery);
         $genreArray=[];
-        $releaseInfoArray=[];
+        $finalPlatArray=[];
+        $timeArray = [];
         if($result2->num_rows > 0 ){
-
             while($row = $result2->fetch_assoc()){
                         // echo "Genre name/s are : " . $row["genre_name"]; 
                         array_push($genreArray, $row["genre_name"]);
@@ -473,24 +480,32 @@ $contentArray =[];
             if($result3->num_rows > 0 ){
              while($row = $result3->fetch_assoc()){
                         // echo "Platform name:  " . $row["platform_name"] . " release date: " . $row["release_date"];
-                        $data = $row["platform_name"] . " " . $row["release_date"];
-                        array_push($releaseInfoArray, $data);
+                        $data = $row["platform_name"];
+                        array_push($finalPlatArray, $data);
               } 
 
                // echo "\n" .  var_dump($releaseInfoArray); 
-                $contentArray["release_info"]=$releaseInfoArray;
+                $contentArray["platforms"]=$finalPlatArray;
                   // echo "Echoing final contents of the ContentArray!" . "\n" ;
                  // echo var_dump($contentArray);
                   //Finallly send it in JSON FORMAT
-                  echo json_encode($contentArray);
-
+                  //echo json_encode($contentArray);
          }else{
            // echo "Sorry no results found for this query! \n";
          }
+         
+      if($result4->num_rows > 0){
+        while($row = $result4->fetch_assoc()){
+           array_push($timeArray, $row["main_story"]);
+           array_push($timeArray, $row["main_extras"]);
+           array_push($timeArray, $row["completionist"]);
+           array_push($timeArray, $row["combined"]);
+        }
+        $contentArray["time_to_beat"] = $timeArray;
+      }
+  }
 
-
-    }
-
+  echo json_encode($contentArray);
 }else if((empty($listOfSelectedIds)&&!empty($platforms)) ||(empty($listOfSelectedIds)&&!empty($genres)) ||(empty($listOfSelectedIds)&&!empty($scores)) ||
 (empty($listOfSelectedIds)&&!empty($times)) ||(empty($listOfSelectedIds)&&!empty($ratings)) ||(empty($listOfSelectedIds)&&!empty($years))
 ){
@@ -505,16 +520,18 @@ $contentArray =[];
   // echo "Length of all the selected games " . $length . "\n";
  $randomIndex  = rand(0, ($length-1));
 // echo "RANDOM INDEX CHOSEN IS " . $randomIndex . " with id ". $listOfSelectedIds[$randomIndex];
- $randomQuery = "SELECT * FROM games2 WHERE id=". $listOfSelectedIds[$randomIndex] ;
- $randomGenreQuery= "SELECT * FROM genres WHERE genre_id=".$listOfSelectedIds[$randomIndex];
- $randomReleaseData= "SELECT * FROM release_info WHERE release_id =".$listOfSelectedIds[$randomIndex];
+$randomQuery = "SELECT * FROM giant_bomb_games WHERE id=". $listOfSelectedIds[$randomIndex] ;
+$randomGenreQuery= "SELECT * FROM genres WHERE genre_id=".$listOfSelectedIds[$randomIndex];
+$randomPlatform= "SELECT * FROM platforms WHERE platform_id =".$listOfSelectedIds[$randomIndex];
+$randomTime= "SELECT * FROM time_to_beat_table WHERE id =".$listOfSelectedIds[$randomIndex];
 $result = $conn->query($randomQuery);
 $result2 = $conn->query($randomGenreQuery);
 $result3 = $conn->query($randomReleaseData);
+$result4 = $conn->query($randomTime);
 $contentArray =[];
 $genreArray=[];
-$releaseInfoArray=[];
-
+$platformArray=[];
+$timeArray = [];
 
 
             if($result->num_rows > 0 ){
@@ -528,21 +545,20 @@ $releaseInfoArray=[];
                      //    $row["url"];
                      //    "<br>" ."\n";
 
-                         $chosenID = $row["id"];
-
+                        $chosenID = $row["id"];
                          $contentArray = [
                          'name'=> $row['name'],
                          'id'=>$row['id'],
                          'cover'=> $row['cover'],
+                         'releaseDate'=>$row['release_data'],
                          'summary'=>$row['summary'],
-                         'time_to_beat'=> $row['time_to_beat'],
                          'rating'=>$row['rating'],
-                         'info'=> $row['url']
+                         'info'=> $row['url'],
                          ];
               }
-                 // echo "\n" .  var_dump($contentArray); 
+                  echo "\n" .  var_dump($contentArray); 
          }else{
-           // echo "Sorry no results found for this query! \n";
+            echo "Sorry no results found for this query! \n";
          }
 
           if($result2->num_rows > 0 ){
@@ -550,29 +566,42 @@ $releaseInfoArray=[];
                         // echo "Genre name/s are : " . $row["genre_name"]; 
                         array_push($genreArray, $row["genre_name"]);
                         }
-                // echo "\n" .  var_dump($genreArray); 
+                 echo "\n" .  var_dump($genreArray); 
                 $contentArray["genres"] = $genreArray;
-
          }else{
-           // echo "Sorry no results found for this query! \n";
+            echo "Sorry no results found for this query! \n";
          }
-
             if($result3->num_rows > 0 ){
              while($row = $result3->fetch_assoc()){
                       // echo "Platform name:  " . $row["platform_name"] . " release date: " . $row["release_date"];
-                      $data = $row["platform_name"] . " " . $row["release_date"];
+                      $data = $row["platform_name"];
                       array_push($releaseInfoArray, $data);
                 }
-                  // echo "\n" .  var_dump($releaseInfoArray); 
-                  $contentArray["release_info"]=$releaseInfoArray;
+                   echo "\n" .  var_dump($releaseInfoArray); 
+                  $contentArray["platforms"]=$releaseInfoArray;
                   // echo "Echoing final contents of the ContentArray!" . "\n" ;
-                 // echo var_dump($contentArray);
                   //Finallly send it in JSON FORMAT
-                  echo json_encode($contentArray);
+                  //echo json_encode($contentArray);
 
          }else{
-           // echo "Sorry no results found for this query! \n";
+            echo "Sorry no results found for this query! \n";
          }
+
+          if($result4->num_rows > 0){
+        while($row = $result4->fetch_assoc()){
+           array_push($timeArray, $row["main_story"]);
+           array_push($timeArray, $row["main_extras"]);
+           array_push($timeArray, $row["completionist"]);
+           array_push($timeArray, $row["combined"]);
+        }
+        //$contentArray["time_to_beat"] = $timeArray;
+         echo "\n" .  var_dump($releaseInfoArray); 
+         $contentArray["platforms"]=$releaseInfoArray;
+          echo "Echoing final contents of the ContentArray!" . "\n" ;
+          echo var_dump($contentArray);
+
+      }
+
     }
    $conn->close();
 // }
