@@ -96,7 +96,7 @@ function cacheGenre(data){
 
  $(document).ready(function(){
  	console.log("CALLING GENRE PULL!")
- 	genreAjaxCall();
+ 	//genreAjaxCall();
  }); 
 
 function insertData(data){
