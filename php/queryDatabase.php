@@ -224,7 +224,7 @@ echo ("DONE WITH YEAR AND PLATFORM SELECTION");
 
 
  $genreQueryStatement = [] ; 
- $finalListSelectedIds=[];
+ //$finalListSelectedIds=[];
   //If the platform and year returned nothing, and there 
 //for the boolean if true there are platforms and years, then you need to do the else if, if false... then it shouldn't run.
  //It should only run if there was only thing choosen. 
@@ -252,35 +252,34 @@ if(empty($listOfSelectedIds) && !empty($genres)){
     }
 }else if(!empty($listOfSelectedIds) && !empty($genres)){
       $idLegnth = count($listOfSelectedIds);
+      $tempIds = [];
       $genreLength = count($genres);
-        for($i=0;$i<$idLegnth; $i++){
-          echo "Genre with other data loop i= ".$i . "\n";
-           $genreQueryStatement[$i] .=  "SELECT genre_id,genre_name FROM genres WHERE( ";
-          for($j = 0 ; $j<$genreLength;$j++){
-             $genreQueryStatement[$i] .= "genre_id= ". "'".$listOfSelectedIds[$i] ."'" . " AND genre_name =". "'" . $genres[$j] ."')";
-              echo $genreQueryStatement[$i] . "\n" . "j = "  . $j  ;
-             //ending
-               if($j == $genreLength-1){
-                    $genreQueryStatement[$i].= ";";
-                }else{
-                  $genreQueryStatement[$i].= " OR ( ";
-                }
-          } // end j loop
-         $result = $conn->query($genreQueryStatement[$i]);
+        for($i=0;$i<$genreLength; $i++){
+           echo "Genre with other data loop i= ".$i . "\n";
+           $genreQueryStatement[$i] .=  "SELECT genre_id,genre_name FROM genres WHERE( " . "genre_name=" .'"'. $genres[$i].'"'.")";
+           echo $genreQueryStatement[$i] . "\n\n";
+           $result = $conn->query($genreQueryStatement[$i]);
              if($result->num_rows > 0 ){
                 while($row = $result->fetch_assoc()){
-                           echo "Results Found for genre with the mathcing id! \n";
+                           echo "Results Found for genre with the mathcing name! \n";
                            echo "id: " . $row["genre_id"]. " - Genre Name: " . $row["genre_name"]. "<br>" ."\n";
-                            if(!in_array($row["genre_id"], $finalListSelectedIds)){
-                               echo "Pushing inside the array \n";
-                                array_push($finalListSelectedIds, $row['genre_id']);
-                          }
+                           echo "Pushing inside the array \n";
+                           //NOTE: Pull the genre query, if the id of the row matches any id already selected add it to a temp array,
+                           //meaning that it fufills both requirements of the genre and whatever was found previously, the new final
+                           //list is in tempIds array, make listOfSelectedIds a copy of that. 
+                           if(in_array($row["genre_id"], $listOfSelectedIds)){
+                               echo "Genre with a match in List selected ids found and added to the temp array \n";
+                               array_push($tempIds, $row['genre_id']);               
+                           }
                }
-             echo "Left the while loop \n"; 
-          }
-    } //end four loop
-    echo "For loop ended man... \n";
-    echo (var_dump($finalListSelectedIds));
+
+         } 
+    } 
+
+    //Copy the temp as the new listOfSelectedIds
+    $listOfSelectedIds = $tempIds;
+
+    echo(var_dump($listOfSelectedIds));
  }
 
 
@@ -307,33 +306,38 @@ if(!empty($finalListSelectedIds)){
 $timeSelectQuery = [];
 $secondaryArray = [] ;
 
+//Times alone with no previously selected filters 
+//GOT BLANK TIME TO WORK
+// HOW TO TIME OVER 100 look for "100+"
+
+
 if(!empty($times) && empty($listOfSelectedIds)){
     $timeLength = count($times);
     for($i= 0 ; $i<$timeLength ; $i++){
-        $timeSelectQuery[$i] .= "SELECT * FROM time_to_beat_table WHERE";
-        if($times[$i]!=""){
+        $timeSelectQuery[$i] .= "SELECT * FROM time_to_beat_table WHERE ";
+        //If the user clicks a button it includes a blank string the time AJAX Post and includes games that
+        //have no time to beat for main story so they can also be selected. 
+        //BUT... it's not "" a not record game has  "--" 
+        if($times[$i]!="--" && $times[$i]!="100+"){
             $spaceIndex = strpos($times[$i], " "); 
             $lastIndex =  strlen($times[$i]); 
             $secondValue =   substr($times[$i], $spaceIndex);
             $firstValue =  substr($times[$i],0,$spaceIndex);
-          }else{
-            // echo "IN THE BLANK STRING SETTINGS FOR TIME \n";
-              $firstValue = 0;
-              $secondValue=0;
-          }
-          $firstValInt = (int)$firstValue;
-          $secondValInt = (int)$secondValue;
-          echo "first val is ". $firstValue . " second val is " . $secondValue . "\n";
-          for($j=$firstValInt;$j<$secondValInt;$j++){
+            $firstValInt = (int)$firstValue;
+            $secondValInt = (int)$secondValue;
+            echo "first val is ". $firstValue . " second val is " . $secondValue . "\n";
+            for($j=$firstValInt;$j<$secondValInt+1;$j++){
               if($j==$secondValInt){
-                 $timeSelectQuery[$i] .= "(main_story LIKE " . '"%'. $j .  '%"'. ")";
+                //end
+                 $timeSelectQuery[$i] .= "(main_story = " . '"'. $j .  ' Hours"'. ") OR ";
+                 $timeSelectQuery[$i] .= "(main_story = " . '"'. $j . "½ Hours".'"'.")";
               }else{
                 //not end
-                 $timeSelectQuery[$i] .= "main_story LIKE " . '"%'. $j .  '%"'. ") OR";
+                 $timeSelectQuery[$i] .= "(main_story = " . '"'. $j .  ' Hours"'. ") OR ";
+                 $timeSelectQuery[$i] .= "(main_story = " . '"'. $j. "½ Hours" . '"'. ") OR ";
               }
               echo $timeSelectQuery[$i] . "\n\n";
             }
-
             $result = $conn->query($timeSelectQuery[$i]);
              if($result->num_rows > 0 ){
                 while($row = $result->fetch_assoc()){
@@ -342,65 +346,109 @@ if(!empty($times) && empty($listOfSelectedIds)){
                             if(!in_array($row["id"], $listOfSelectedIds)){
                                 array_push($listOfSelectedIds, $row['id']);
                           }
-               } 
+                      } 
+                  } 
+          }else if($times[$i]=="--"){
+             echo "IN THE BLANK STRING SETTINGS FOR TIME \n";
+             $timeSelectQuery[$i] .= "(main_story = " . '"'. $times[$i] .  '"'. ")";
+             $result = $conn->query($timeSelectQuery[$i]);
+             if($result->num_rows > 0 ){
+                while($row = $result->fetch_assoc()){
+                           echo "Results Found for time \n";
+                            echo "id: " . $row["id"]. " - main story:  " . $row["main_story"]. "<br>" ."\n";
+                            if(!in_array($row["id"], $listOfSelectedIds)){
+                                array_push($listOfSelectedIds, $row['id']);
+                          }
+                      } 
+                  } 
+              
+          }else if($times[$i]=="100+"){
+             echo "IN THE 100+ STRING SETTINGS FOR TIME \n";
+             $timeSelectQuery[$i] .= "(main_story LIKE" . '"'. '_00%'  .  '"'. ")";
+             $result = $conn->query($timeSelectQuery[$i]);
+             if($result->num_rows > 0 ){
+                while($row = $result->fetch_assoc()){
+                           echo "Results Found for time \n";
+                            echo "id: " . $row["id"]. " - main story:  " . $row["main_story"]. "<br>" ."\n";
+                            if(!in_array($row["id"], $listOfSelectedIds)){
+                                array_push($listOfSelectedIds, $row['id']);
+                          }
+                      } 
+                  } 
           }
-    }
+    } // End for loop 
 }else if(!empty($times) && !empty($listOfSelectedIds)){
-    //There is a year or platform or genre choose and need to search that with the time.
-  //For max time, just say the maximum time is 1000hrs or 800hrs
-      $timeLength = count($times);
-      $length = count($listOfSelectedIds);
-      for($i= 0 ; $i<$length ; $i++){
-            $timeSelectQuery[$i] .= "SELECT * FROM time_to_beat_table WHERE ";
-            for($j = 0 ; $j<$timeLength;$j++){
-               if($times[$j]!=""){
-                  $spaceIndex = strpos($times[$j], " "); 
-                  $lastIndex =  strlen($times[$j]); 
-                  $secondValue =  substr($times[$j], $spaceIndex);
-                  $firstValue =  substr($times[$j],0,$spaceIndex);
-             }else{
-               echo "In the empty time setting with genre/platform/year found \n";
-              $firstValue = 0;
-              $secondValue= 0;
-             }
-               echo "First value: " . $firstValue . " Second value " . $secondValue . "\n\n";
-               $firstValInt = (int)$firstValue;
-               $secondValInt = (int)$secondValue;
-                for($k=$firstValInt;$k<$secondValInt;$k++){
-                  if($k==$secondValInt){
-                      $timeSelectQuery[$i] .= "(main_story LIKE " . '"%'. $k .  '%"'. "AND id=".$listOfSelectedIds[$i] .")";
-                  }else{
+  //Difference is that this needs the temp arrays to so that listSelected ids will only contain the
+  //new query selections.
+    $timeLength = count($times);
+    $tempIds = [] ;
+    for($i= 0 ; $i<$timeLength ; $i++){
+        $timeSelectQuery[$i] .= "SELECT * FROM time_to_beat_table WHERE ";
+        //If the user clicks a button it includes a blank string the time AJAX Post and includes games that
+        //have no time to beat for main story so they can also be selected. 
+        //BUT... it's not "" a not record game has  "--" 
+        if($times[$i]!="--" && $times[$i]!="100+"){
+            $spaceIndex = strpos($times[$i], " "); 
+            $lastIndex =  strlen($times[$i]); 
+            $secondValue =   substr($times[$i], $spaceIndex);
+            $firstValue =  substr($times[$i],0,$spaceIndex);
+            $firstValInt = (int)$firstValue;
+            $secondValInt = (int)$secondValue;
+            echo "first val is ". $firstValue . " second val is " . $secondValue . "\n";
+            for($j=$firstValInt;$j<$secondValInt+1;$j++){
+              if($j==$secondValInt){
+                //end
+                 $timeSelectQuery[$i] .= "(main_story = " . '"'. $j .  ' Hours"'. ") OR ";
+                 $timeSelectQuery[$i] .= "(main_story = " . '"'. $j . "½ Hours".'"'.")";
+              }else{
                 //not end
-                      $timeSelectQuery[$i] .= "main_story LIKE " . '"%'. $k .  '%"'. "AND id=".$listOfSelectedIds[$i].") OR";
+                 $timeSelectQuery[$i] .= "(main_story = " . '"'. $j .  ' Hours"'. ") OR ";
+                 $timeSelectQuery[$i] .= "(main_story = " . '"'. $j. "½ Hours" . '"'. ") OR ";
               }
               echo $timeSelectQuery[$i] . "\n\n";
             }
-                //    if($j == $timeLength-1){
-                //     $timeSelectQuery[$i].= ";";
-                // }else{
-                //   $timeSelectQuery[$i].= " OR ( ";
-                // }
-            //Down here will be a boolean to see if they want to include games without data
             $result = $conn->query($timeSelectQuery[$i]);
              if($result->num_rows > 0 ){
-              while($row = $result->fetch_assoc()){
-                        // echo "Results Found for time with selected ids! \n";
-                        //  echo "id: " . $row["id"]. " - time to beat:  " . $row["time_to_beat"]. "<br>" ."\n";
-                          if(!in_array($row["id"], $secondaryArray)){
-                              array_push($secondaryArray, $row['id']);
-                        }
-                     } 
-          }else{
-             echo "Sorry no results found for this query! \n";
-             }
-        } //End of j    
-            echo $timeSelectQuery[$i] . "\n";        
-     }  //end of main loop      
-          if(!empty($secondaryArray)){
-           //copy it to listIDS overwrite it, else just use the values in it.
-           $listOfSelectedIds = $secondaryArray;
-          }
-}
+                while($row = $result->fetch_assoc()){
+                           echo "Results Found for time \n";
+                            echo "id: " . $row["id"]. " - main story:  " . $row["main_story"]. "<br>" ."\n";
+                            if(in_array($row["id"], $listOfSelectedIds)){
+                                array_push($tempIds, $row['id']);
+                          }
+                      } 
+                  } 
+          }else if($times[$i]=="--"){
+             echo "IN THE BLANK STRING SETTINGS FOR TIME \n";
+             $timeSelectQuery[$i] .= "(main_story = " . '"'. $times[$i] .  '"'. ")";
+             $result = $conn->query($timeSelectQuery[$i]);
+             if($result->num_rows > 0 ){
+                while($row = $result->fetch_assoc()){
+                           echo "Results Found for time \n";
+                            echo "id: " . $row["id"]. " - main story:  " . $row["main_story"]. "<br>" ."\n";
+                            if(in_array($row["id"], $listOfSelectedIds)){
+                                array_push($tempIds, $row['id']);
+                          }
+                      } 
+                  } 
+          }else if($times[$i]=="100+"){
+             echo "IN THE 100+ STRING SETTINGS FOR TIME \n";
+             $timeSelectQuery[$i] .= "(main_story LIKE" . '"'. '_00%'  .  '"'. ")";
+             $result = $conn->query($timeSelectQuery[$i]);
+             if($result->num_rows > 0 ){
+                while($row = $result->fetch_assoc()){
+                           echo "Results Found for time \n";
+                            echo "id: " . $row["id"]. " - main story:  " . $row["main_story"]. "<br>" ."\n";
+                            if(in_array($row["id"], $listOfSelectedIds)){
+                                array_push($tempIds, $row['id']);
+                          }
+                      } 
+                  } 
+
+          } 
+    } // End for loop
+        $listOfSelectedIds = $tempIds;
+} //end else if time 
+
 
  echo ("DONE WITH time SELECTION \n");
 
@@ -409,6 +457,7 @@ $scoresSelectQuery = [];
 $ratingSelectQuery = [];
 $secondaryArray = [] ;
 //Just query the ratings. 
+//THIS WONT WORK YET BECAUSE... NO DATA!
 if(!empty($scores) && empty($listOfSelectedIds)){  
     $scoresLength = count($scores);
     for($i= 0 ; $i<$scoresLength ; $i++){
@@ -666,7 +715,7 @@ $timeArray = [];
            array_push($timeArray, $row["completionist"]);
            array_push($timeArray, $row["combined"]);
         }
-        //$contentArray["time_to_beat"] = $timeArray;
+        $contentArray["time_to_beat"] = $timeArray;
       }
 
       // echo "\n" .  var_dump($releaseInfoArray); 
