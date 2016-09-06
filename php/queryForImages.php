@@ -7,7 +7,7 @@ $username = "root";
 $password = "DIAMONDjozu17";
 $dbname  = "giant_bomb";
 $conn = new mysqli($servername, $username, $password, $dbname);
-$randomGameRows = "SELECT cover FROM giant_bomb_games WHERE `cover` IS NOT NULL ORDER BY RAND() LIMIT 20";
+$randomGameRows = "SELECT cover FROM giant_bomb_games WHERE `cover` IS NOT NULL ORDER BY RAND() LIMIT 30";
 $result = $conn->query($randomGameRows);
 $imageArray= [];
 if($result->num_rows > 0){

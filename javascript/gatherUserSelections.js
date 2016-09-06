@@ -94,12 +94,24 @@ function gatherButtonValues (){
 /*
 One Ajax Call to pull all possible games and cache them in the browser using Javascript
 */
-
+		var value=0;
+//Something wrong with this shit
 
 $(document).on('click' , '.run_button' , function(){
 		console.log('Executing random search'); 
-		gatherButtonValues(); 
-		//roatateWheel();
+		//gatherButtonValues();
+		var counter = 0 ; 
+		while(counter<800){
+			if(counter%2){
+			value+=0.4;
+		}else{
+			value-=0.4;
+		}
+			roatateWheel(value);
+			counter++
+			console.log("Counter is " + counter +" and value is  " + value)
+		}
+		resetWheelValues();
 });
 
 /*
@@ -123,29 +135,39 @@ Function to roatate the wheel as long as the there function to get the random ga
 
 
 //Moves 40 degrees at a time.
-function roatateWheel(currentDeg)
-{	
-	var carousel = $("#carousel");
-	console.log(carousel);
-	//var currentDeg = 0;
-	//currentDeg+=40;
-	carousel.css({
-   		"-webkit-transform": "rotateY("+currentDeg+"deg)",
-   		"-moz-transform": "rotateY("+currentDeg+"deg)",
-   		"-o-transform": "rotateY("+currentDeg+"deg)",
-   		"transform": "rotateY("+currentDeg+"deg)"
-  	});
+function roatateWheel(currentDeg){	
+	 var carousel = $("#carousel");
+	// console.log(carousel);
+	 carousel.css({
+    		"-webkit-transform": "rotateY("+currentDeg+"deg)",
+    		"-moz-transform": "rotateY("+currentDeg+"deg)",
+    		"-o-transform": "rotateY("+currentDeg+"deg)",
+    		"transform": "rotateY("+currentDeg+"deg)"
+   	}); 	
 }
 
-	// while(counter<25){
-	// 	$arrayPanels =  $("#carousel figure ").each(function(index) {
-	// 		console.log($(this));
-	// 		rotateValue+=40;
-	// 		$(this).css("-webkit-transform", "rotateY("+ rotateValue + " deg) " + "translateZ(687px)");
-	// 	});
-	// 	counter++;
-	// 	console.log("counter: " + counter);
-	// }
+
+
+$(document).ready(function(){
+    $(window).resize(function(){
+       console.log("WINDOW RESIZED");
+       recalcuateWheelZ();
+    });
+});
+
+
+function recalcuateWheelZ(){
+		 var carousel = $("#carousel");
+		 var containerWidth  =$("container").css('width');
+		 console.log("WIDTH---> " +containerWidth);
+		 var zVal  = (containerWidth/2)/(Math.tan(20));
+		  carousel.css({
+    		"-webkit-transform": "translateZ("+currentDeg+"px)",
+    		"-moz-transform": "translateZ("+currentDeg+"px)",
+    		"-o-transform": "translateZ("+currentDeg+"px)",
+    		"transform": "translateZ("+currentDeg+"px)"
+   	}); 	
+}
 
 
 

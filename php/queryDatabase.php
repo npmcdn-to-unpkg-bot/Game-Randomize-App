@@ -41,6 +41,7 @@ error_reporting(0);
  $includeEmptyScores='true';
 
 
+
 //Start formating all the data 
    if(!(empty($_POST['platformArray']))){
     $platforms = $_POST['platformArray'];
@@ -318,6 +319,11 @@ if(!empty($times) && empty($listOfSelectedIds)){
         //If the user clicks a button it includes a blank string the time AJAX Post and includes games that
         //have no time to beat for main story so they can also be selected. 
         //BUT... it's not "" a not record game has  "--" 
+        //there are some games with time_to_beat_id = 0, make a selection so the user and pick that as well.
+        //after the two for loops, just include all game with time_to_beat_id = 0, use a boolean recieved from the post array.
+
+
+
         if($times[$i]!="--" && $times[$i]!="100+"){
             $spaceIndex = strpos($times[$i], " "); 
             $lastIndex =  strlen($times[$i]); 
@@ -377,6 +383,19 @@ if(!empty($times) && empty($listOfSelectedIds)){
                   } 
           }
     } // End for loop 
+    //If the user wants time_id_ = 0
+    if($includeEmptyTimes){
+      echo " Including games with time_to_beat_id = 0 ";
+      $emptyTimeIdQuery = "SELECT id FROM `giant_bomb_games` WHERE time_to_beat_id=0";
+       $result = $conn->query($emptyTimeIdQuery);
+             if($result->num_rows > 0 ){
+                while($row = $result->fetch_assoc()){
+                                array_push($listOfSelectedIds, $row['id']);
+                                echo "Game with time_id = 0 pushed to selected array.";
+
+                      } 
+                  } 
+      }
 }else if(!empty($times) && !empty($listOfSelectedIds)){
   //Difference is that this needs the temp arrays to so that listSelected ids will only contain the
   //new query selections.
@@ -446,7 +465,20 @@ if(!empty($times) && empty($listOfSelectedIds)){
 
           } 
     } // End for loop
-        $listOfSelectedIds = $tempIds;
+      //If the user wants time_id_ = 0
+    if($includeEmptyTimes){
+      echo " Including games with time_to_beat_id = 0 ";
+      $emptyTimeIdQuery = "SELECT id FROM `giant_bomb_games` WHERE time_to_beat_id=0";
+       $result = $conn->query($emptyTimeIdQuery);
+             if($result->num_rows > 0 ){
+                while($row = $result->fetch_assoc()){
+                                array_push($tempIds, $row['id']);
+                                echo "Game with time_id = 0 pushed to selected array.";
+
+                      } 
+              } 
+      }
+ $listOfSelectedIds = $tempIds;
 } //end else if time 
 
 

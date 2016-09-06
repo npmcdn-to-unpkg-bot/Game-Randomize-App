@@ -380,29 +380,28 @@ to{width:100%; text-indent:0}
   margin-left: 40%;
   margin-top: 20%;
 } 
+.container {
+  width: 210px;
+  height: 140px;
+  position: relative;
+  -webkit-perspective: 1000;
+}
 
 #carousel{
-height: 100%;
-  width: 100%;
-  position: absolute;
-  transform-style: preserve-3d;
-  transition: transform 4s;
+	height: 100%;
+	width: 100%;
+	position: absolute;
+	-webkit-transform-style: preserve-3d;
+	transition: transform 4s;
 }
 
-.carousel div {
-  transform-style: preserve-3d; 
-}
+
 
 #carousel figure {
-  display: block;
+ display: block;
   position: absolute;
-  /*
   width: 186px;
   height: 116px;
-  */
-  content:url(../images/gray_questionmark.png);
-  width: 220px;
-  height: 170px;
   left: 10px;
   top: 10px;
   border: 2px solid black;

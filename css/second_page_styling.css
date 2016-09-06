@@ -86,7 +86,9 @@ body{
 #main {
 	display: inline-block;
 	overflow: auto;
-	background-image: url(../images/triangular_@2X.png);
+	/*Stacking background images for parallax effect 
+	background-image: url(../images/shattered.png);*/
+	color:white;
 	width: 100%;
 	height: 100%;
 	font-family: 'Quicksand', sans-serif;
@@ -95,15 +97,84 @@ body{
     position: absolute; 
     top: 0; 
     left: 0;
+
 }
 
-#main p{
+#main:before{
+  content: "";
+  display: block;
+  position: fixed;
+  left: 0;
+  right: 0;
+  z-index: -1;
+  width:100%;
+  height: 100%;
+  -webkit-filter: blur(8px);
+  -moz-filter: blur(8px);
+  -o-filter: blur(8px);
+  -ms-filter: blur(8px);
+  filter: blur(8px);
+ 
+  
+  background-size: cover;
+  background-image: url(../images/controller_background.jpg);
+ /* background-repeat: repeat-x;
+  animation: animatedBackground 20s linear infinite;*/
+}
+
+@keyframes animatedBackground {
+	from { background-position: 0 0; }
+	to { background-position: 100% 0; }
+}
+
+
+
+#main .instructions{
 	font-size: 50%;
+	margin: 0;
+	padding: 0;
+}
+
+#main .instructions ul img{
+	width: 20%;
+	height: 20%;
+	transition: all .6s ease-in-out;
+}
+
+
+#main .instructions ul img:hover { 
+	transform: scale(1.4); 
+}
+
+
+
+#main .instructions ul li{
+	display: inline;
+	overflow: auto;
+	list-style: none;
+}
+
+
+#main .instructions ul {
+	margin-left: 12%;
+
+}
+
+#main .hint{
+	left: 7%;
+	position: relative;
+	padding: 0;
+}
+#main .features{
+	font-size: 55%;
+	margin: 0;	
+	position: relative;
+	bottom: 3%;
 }
 
 #main header{
+	color: white;
 	font-family: 'Quicksand', sans-serif;
-	color: #211C11  ;
 	text-align: center;
 	/*font-size: 3em;*/
 	font-size: 150%;
@@ -151,7 +222,8 @@ body{
 	box-shadow: none;
 	border-radius: 10px;
 	color: #fff;
-	background-color: #A6EA3C;
+	/*background-color: #A6EA3C; */
+	background-color:rgba(28,109,200,1);
 	border: none;
 	box-shadow: 0 10px #27496d;
 	font-style: italic;
@@ -171,7 +243,7 @@ background-color:
  translate shadow down (normal shodow value - pressed down 
  shadow value = translateY font-variant-ligatures: ) */
 /*  background-color: #417cb8;*/
-background-color: #82BC29  ;
+background-color: rgba(13,84,165,1);
   box-shadow: 0 5px #27496d;
   transform: translateY(5px);
 }
@@ -199,11 +271,13 @@ background-color: #82BC29  ;
 #main .next{
 	width: 5%;
 	height: 8%;
-	content: url(../images/forward_arrow.png);
 	float: right;
 	position: absolute;
 	bottom:0%; 
-	right:0%;
+	right:0%;	
+	font-size: 140%;
+	text-decoration: none;
+	color: white ;
 }
 
 
@@ -211,47 +285,50 @@ background-color: #82BC29  ;
 	position: absolute;
 	width: 5%;
 	height:8%;
-	content: url(../images/back_arrow.png);
 	float: left;
 	bottom:0%; 
 	left:0%;
-
+	font-size: 140%;
+	text-decoration: none;
+	color: white;
 }
 
 
-#main .previous_arrow a:link {
+#main .previous a:link {
     color: red;
 }
 
 /* visited link */
-#main .previous_arrow a:visited {
+#main .previous a:visited {
     color: green;
 }
 
 /* mouse over link */
-#main .previous_arrow a:hover {
+#main .next a:hover {
     color: hotpink;
 }
 
 /* selected link */
-#main .previous_arrow a:active {
+#main .next a:active {
     color: blue;
 }
 
 #main .run_button{
 	display: inline-block;
-	font-size: 2em;
-	width: 30%;
-	height: 30%;
-	margin: 2px;
+	font-size: 100%;
+	width: 25%;
+	height: 20%;
+	margin: 0 auto;
 	font-style: bold;
-	margin-top: 10%;
-	margin-left: 35%; 
-	color:#F7D9F5  ;
+	color:#F7D9F5;
+	left: 37%;
+	position: relative;
+	background-color: rgba(174,4,4,1);
+	top:300px;
 }
 
 #main .run_header{
-	color:#EEADF0  ;
+	color:white  ;
 	font-weight: 20px;
 	font-size: 150%;
 }
@@ -279,3 +356,67 @@ background-color: #82BC29  ;
 	color: #8B1621  ;
 }
 
+
+.container {
+ 		 /*width: 420px;*/
+ 		 width: 35%;
+ 		 height: 35%;
+ 		 position: relative;
+ 		 margin: 0 auto ;
+ 		-webkit-perspective: 1000px;
+ 		-moz-perspective: 1000px;
+        -o-perspective: 1000px;
+        perspective: 1000px;
+        left: 6%;
+        top: 8%;
+}
+
+
+#carousel{
+  width: 100%;
+  height: 100%;
+  position: absolute;  
+     -webkit-transform-style: preserve-3d;
+         -moz-transform-style: preserve-3d;
+           -o-transform-style: preserve-3d;
+              transform-style: preserve-3d;
+      -webkit-transition: -webkit-transform 1s;
+         -moz-transition: -moz-transform 1s;
+           -o-transition: -o-transform 1s;
+              transition: transform 1s;
+}
+
+#carousel figure {
+  display: block;
+      position: absolute;
+      width: 65%;
+      height: 55%;
+      left: 10px;
+      top: 10px;
+      border: 2px solid black;
+      line-height: 116px;
+      font-size: 80px;
+      font-weight: bold;
+      color: white;
+      text-align: center;
+}
+
+/* 577 for 40% width*/
+#carousel figure:nth-child(1) { -webkit-transform: rotateY(0deg) translateZ(650px); }
+#carousel figure:nth-child(2) { -webkit-transform: rotateY(40deg) translateZ(650px); }
+#carousel figure:nth-child(3) { -webkit-transform: rotateY(80deg) translateZ(650px); }
+#carousel figure:nth-child(4) { -webkit-transform: rotateY(120deg) translateZ(650px); }
+#carousel figure:nth-child(5) { -webkit-transform: rotateY(160deg) translateZ(650px); }
+#carousel figure:nth-child(6) { -webkit-transform: rotateY(200deg) translateZ(650px); }
+#carousel figure:nth-child(7) { -webkit-transform: rotateY(240deg) translateZ(650px); }
+#carousel figure:nth-child(8) { -webkit-transform: rotateY(280deg) translateZ(650px); }
+#carousel figure:nth-child(9) { -webkit-transform: rotateY(320deg) translateZ(650px); }
+#carousel figure:nth-child(1) { background-color: rgba(241,89,223,0.85);}
+#carousel figure:nth-child(2) { background-color:rgba(249,172,31,0.85);}
+#carousel figure:nth-child(3) { background-color: rgba(161,223,5,0.85);}
+#carousel figure:nth-child(4) { background-color: rgba(72,189,40,0.85);}
+#carousel figure:nth-child(5) { background-color: rgba(63,166,104,0.85);}
+#carousel figure:nth-child(6) { background-color: rgba(74,109,154,0.85);}
+#carousel figure:nth-child(7) { background-color: rgba(88,54,226,0.85);}
+#carousel figure:nth-child(8) { background-color: rgba(198,31,249,0.85);}
+#carousel figure:nth-child(9) { background-color: rgba(223,5,5,0.85);}
